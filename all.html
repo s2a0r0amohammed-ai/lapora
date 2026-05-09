@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labora - All Laptops</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* ================= RESET & VARIABLES ================= */
+        :root {
+            --bg-dark-navy: #1A2332;
+            --bg-card-navy: #2B3444;
+            --text-main-white: #FFFFFF;
+            --text-secondary-gray: #A0A0A0;
+            --accent-cyan-light: #5AD7ED;
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.95);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: var(--text-main-white);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px; 
+            transition: 0.3s; 
+            font-size: 0.9em; 
+            line-height: 1.5;
+        }
+        .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* --- Products Grid --- */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+            text-transform: capitalize;
+            letter-spacing: 2px;
+            width: 100%;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background: var(--bg-card-navy);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--cyan);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+        }
+
+        .image-container {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .image-container img { transform: scale(1.1); }
+
+        .laptop-details {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .laptop-details h3 {
+            font-size: 1.1rem;
+            color: var(--cyan);
+            margin-bottom: 12px;
+            height: 45px;
+            overflow: hidden;
+        }
+
+        .specs-list {
+            list-style: none;
+            font-size: 0.85rem;
+            color: var(--text-secondary-gray);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .specs-list li { margin-bottom: 5px; }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .price { font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+        .btn-buy {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            text-align: center;
+            border: none;
+        }
+
+        .btn-buy:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(129, 140, 248, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* Next Button Style */
+        .btn-next {
+            background: transparent;
+            color: var(--cyan);
+            text-decoration: none;
+            padding: 12px 40px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            border: 2px solid var(--cyan);
+            transition: all 0.4s ease;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        .btn-next:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.5);
+            transform: translateY(-3px);
+        }
+
+        /* RTL Logic */
+        body[style*="direction: rtl"] .nav-links { flex-direction: row-reverse; }
+        body[style*="direction: rtl"] .card-footer { flex-direction: row-reverse; }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo" id="main-logo">Lap<span>ora</span></div>
+        </div>
+
+        <ul class="nav-links">
+      <li><a href="index.html" id="nav-home">home</a></li>
+      <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+      <li><a href="choices.html" id="nav-choices">choices</a></li>
+      <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+      <li><a href="price.html" id="nav-prices">prices</a></li>
+      <li><a href="tips.html" id="nav-tips">tips</a></li>
+      <li><a href="ourteam.html" id="nav-team">our team</a></li>
+    </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+            
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:01022948009" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="section-title" id="page-title">all laptops 💻</h1>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="image-container"><img src="https://static0.xdaimages.com/wordpress/wp-content/uploads/2023/11/macbook-pro-m3-max-xda-review08761.jpg"></div>
+                <div class="laptop-details">
+                    <h3>MacBook Pro 16" (M3 Max)</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: M3 Max (14-core CPU)</li>
+                        <li>💾 Ram: 64GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">210,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/hermano/verge/product/image/9868/mchin_200731_5205_0004.jpg?quality=90&strip=all&crop=0%2C0%2C100%2C100&w=2400"></div>
+                <div class="laptop-details">
+                    <h3>ASUS Zenbook Pro 14 Duo</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i9-13900H</li>
+                        <li>💾 Ram: 32GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">125,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.digitaltrends.com/tachyon/2023/05/msi-creator-z17-hx-studio-front-angled-e1683665279285.jpg?resize=720%2C480"></div>
+                <div class="laptop-details">
+                    <h3>MSI Creator Z17 HX</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i9-13950HX</li>
+                        <li>💾 Ram: 32GB DDR5</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">155,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.notebookcheck.net/fileadmin/_processed_/7/c/csm_s_title6__a7843a70db.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Gigabyte AERO 16 OLED</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i9-13900H</li>
+                        <li>💾 Ram: 32GB DDR5</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">110,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://i.ytimg.com/vi/E8stAGJFBz0/maxresdefault.jpg"></div>
+                <div class="laptop-details">
+                    <h3>ASUS ProArt Studiobook 16 OLED</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i9-13980HX</li>
+                        <li>💾 Ram: 32GB DDR5</li>
+                        <li>📁 Storage: 2TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">135,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://i.guim.co.uk/img/media/5bfb1d0e4f886ed333b2e01e222225ec8d9e4eac/418_432_4926_2956/master/4926.jpg?width=700&quality=85&auto=format&fit=max&s=7c8201e38f20cfc6db72d5016bc7c334"></div>
+                <div class="laptop-details">
+                    <h3>Surface Laptop Studio 2</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-13700H</li>
+                        <li>💾 Ram: 32GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">145,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div><div class="product-card">
+                <div class="image-container"><img src="https://i.pcmag.com/imagery/reviews/04x4MxMTbqOwi2Q7Q1e5V6K-8.fit_lim.size_1050x.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Dell XPS 16 (9640)</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core Ultra 9 185H</li>
+                        <li>💾 Ram: 32GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">138,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.digitaltrends.com/tachyon/2023/06/hp-envy-16-2023-front-angled-e1687276665584.jpg?fit=1500%2C1000"></div>
+                <div class="laptop-details">
+                    <h3>HP Envy 16</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i9-13900H</li>
+                        <li>💾 Ram: 32GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">90,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.notebookcheck.net/fileadmin/Notebooks/Apple/MacBook_Air_15_M3/IMG_2772.JPG"></div>
+                <div class="laptop-details">
+                    <h3>MacBook Air 15" (M3)</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Apple M3 (8-Core)</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">78,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://i.rtings.com/assets/products/HpaqSuR6/dell-xps-13-plus-2022/design-medium.jpg?format=auto"></div>
+                <div class="laptop-details">
+                    <h3>Dell XPS 13 Plus</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-1360P</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">83,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.notebookcheck.net/fileadmin/Notebooks/News/_nc4/Huawei-MateBook-X-Pro-2024-header.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Huawei MateBook X Pro</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-1360P</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">88,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://sm.ign.com/ign_pk/review/a/asus-zenbo/asus-zenbook-s13-oled-review_t822.jpg"></div>
+                <div class="laptop-details">
+                    <h3>ASUS Zenbook S 13 OLED</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-1355U</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">73,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://cdn.mos.cms.futurecdn.net/v2/t:0,l:312,cw:2000,ch:1125,q:80,w:2000/V4yVRFs3gSs5yNoTL7FbHa.jpg"></div>
+                <div class="laptop-details">
+                    <h3>HP victus 15 editing Ed</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-13700H</li>
+                        <li>💾 Ram: 16GB DDR4</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">49,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.notebookcheck.net/fileadmin/_processed_/e/3/csm_gf63feature1_9de2d14875.jpg"></div>
+                <div class="laptop-details">
+                    <h3>MSI Thin GF63</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-13900H</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">42,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24647603/236653_Acer_Aspire_5_AKrales_0107.jpg?quality=90&strip=all&crop=0,0,100,100"></div>
+                <div class="laptop-details">
+                    <h3>Acer Aspire 5 Pro</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i5-1235U</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 512 SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">40,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://sm.pcmag.com/t/pcmag_uk/review/l/lenovo-ide/lenovo-ideapad-1-15_b4rp.1920.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Lenovo ideaPad 1</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel celeron N4500</li>
+                        <li>💾 Ram: 4GB DDR4</li>
+                        <li>📁 Storage: 256GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">44,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.speed.ph/wp-content/uploads/2023/03/ASUS-review-1.jpg"></div>
+                <div class="laptop-details">
+                    <h3>ASUS Vivobook 16K</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-12650H</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 1TB SSD NVMe</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">44,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://i.rtings.com/assets/products/mno63SbA/acer-aspire-5-15-2023/design-medium.jpg?format=auto"></div>
+                <div class="laptop-details">
+                    <h3>Acer Aspire 5</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i5-1335U</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">35,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://leeplugshub.com/wp-content/uploads/2025/11/lenovo-v15-g4-iru-business-laptop-1763029704882.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Lenovo V15 G4</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: AMD Ryzen 3 7320U</li>
+                        <li>💾 Ram: 8GB LPDD5</li>
+                        <li>📁 Storage: 256GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">48,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://kaas.hpcloud.hp.com/PROD/v2/renderbinary/9868351/7833436/con-win-nb-p-sebastian-24c1-hp-15-fd1000-specification/con-nb-sebastian-15-fd0000-15-fd1000-product-image"></div>
+                <div class="laptop-details">
+                    <h3>HP Laptop 15-fd</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i3-1215U</li>
+                        <li>💾 Ram: 8GB DDR4</li>
+                        <li>📁 Storage: 256GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">125,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://laptopmedia.com/wp-content/uploads/2023/08/8-12.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Dell Vostro 3530</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-1355U</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 512GB NVMe SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">42,500 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://i.pcmag.com/imagery/reviews/0050zUbJdMGZbzYZncgu56U-10-hero-image-gallery.fit_scale.size_1050x594.v1757718882.jpg"></div>
+                <div class="laptop-details">
+                    <h3>HP victus 15</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i5-13420H</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 6GB Graphics</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">48,900 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://laptopmedia.com/wp-content/uploads/2023/08/7-4.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Lenovo idealPad slim 3</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i7-13620U</li>
+                        <li>💾 Ram: 16GB DDR5</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">45,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://laptopmedia.com/wp-content/uploads/2023/08/7-4.jpg"></div>
+                <div class="laptop-details">
+                    <h3>ASUS Vivobook 16</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Ryzen 7-7730U</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">41,200 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.pcworld.com/wp-content/uploads/2025/04/Acer_Aspire3-1.jpg?quality=50&strip=all"></div>
+                <div class="laptop-details">
+                    <h3>Acer Aspire 3</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i3-1215U</li>
+                        <li>💾 Ram: 8GB</li>
+                        <li>📁 Storage: 256GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">19,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://www.notebookcheck.net/uploads/tx_nbc2/x33MQAbYgjV5HuTh_setting_fff_1_90_end_1000.png"></div>
+                <div class="laptop-details">
+                    <h3>ASUS Vivobook 15</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i5 12th Gen</li>
+                        <li>💾 Ram: 8GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">27,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://5.imimg.com/data5/SELLER/Default/2024/3/400183292/HV/PN/CD/95006438/hp-pavilion-15s-fq5329tu-laptop-500x500.png"></div>
+                <div class="laptop-details">
+                    <h3>HP Pavilion 15</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Ryzen 7 5700U</li>
+                        <li>💾 Ram: 16GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">32,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/20041911/cfaulkner_200617_4065_0015.jpg?quality=90&strip=all&crop=12.5,0,75,100"></div>
+                <div class="laptop-details">
+                    <h3>Lenovo Idealpad Gaming 3</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Ryzen 5 5600H</li>
+                        <li>💾 Ram: 8GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">36,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://i.pcmag.com/imagery/reviews/00QPh8BGF0aMzmfAcUIFdAg-1.fit_scale.size_400x225.v1595619396.jpg"></div>
+                <div class="laptop-details">
+                    <h3>Celeron / 11 inch</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel celeron</li>
+                        <li>💾 Ram: 4GB</li>
+                        <li>📁 Storage: 64GB eMMC</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">8,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="image-container"><img src="https://i.rtings.com/assets/products/FfA6NIVj/msi-modern-14-2023/design-medium.jpg?format=auto"></div>
+                <div class="laptop-details">
+                    <h3>MSI Modern 14</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel core i5 12th Gen</li>
+                        <li>💾 Ram: 8GB</li>
+                        <li>📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">22,000 EGP</span>
+                        <a href="personal.html" class="btn-buy">buy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="tips.html" class="btn-next">next</a>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        };
+
+        document.onclick = (e) => {
+            if (!menu.contains(e.target) && e.target !== btn) {
+                menu.classList.remove('active');
+            }
+        };
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = '#f0f4f8';
+                document.documentElement.style.setProperty('--text-main-white', '#1e2030');
+                document.documentElement.style.setProperty('--bg-card-navy', '#ffffff');
+                document.querySelector('.navbar').style.backgroundColor = '#dde3f0';
+                document.querySelector('.dropdown-list').style.background = '#ffffff';
+                const pageTitle = document.getElementById('page-title');
+                if(pageTitle) pageTitle.style.color = '#1e2030';
+            } else {
+                document.body.style.background = 'radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%)';
+                document.documentElement.style.setProperty('--text-main-white', '#FFFFFF');
+                document.documentElement.style.setProperty('--bg-card-navy', '#2B3444');
+                document.querySelector('.navbar').style.backgroundColor = 'var(--glass-bg)';
+                document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+                const pageTitle = document.getElementById('page-title');
+                if(pageTitle) pageTitle.style.color = '#ffffff';
+            }
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                    'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                    'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 
+                    'sum-about': 'About Us', 'sum-contact': 'Contact Us', 
+                    'txt-about': 'Labora is a premium store for high-end laptops.',
+                    'page-title': 'all laptops 💻'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'الدخول', 'nav-choices': 'الخيارات',
+                    'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                    'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 
+                    'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا', 
+                    'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب المتطورة.',
+                    'page-title': 'كل الأجهزة 💻'
+                }
+            };
+
+            for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerText = data[lang][id];
+                }
+            }
+            
+            document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+            menu.style.right = (lang === 'ar') ? 'auto' : '0';
+            menu.style.left = (lang === 'ar') ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>

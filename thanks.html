@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lapora | Order Confirmed</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            color: var(--text-main-white);
+        }
+
+        .confirm-box {
+            position: relative !important;
+            width: 90%;
+            max-width: 700px;
+            background: rgba(43, 52, 68, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 70px 50px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            animation: fadeUp 1s ease;
+        }
+
+        .check-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 35px;
+            border-radius: 50%;
+            border: 2px solid var(--cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan);
+            font-size: 55px;
+            box-shadow: 0 0 30px rgba(73, 223, 255, 0.35); 
+        }
+
+        .logo { 
+            font-family: 'Roboto', sans-serif; 
+            font-size: 55px; 
+            font-weight: 800; 
+            color: var(--cyan); 
+            margin-bottom: 35px;
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+        }
+        .logo span { color: #fff; }
+
+        h1 {
+            color: white;
+            font-size: 48px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        p {
+            color: var(--text-secondary-gray);
+            font-size: 24px;
+            line-height: 1.8;
+        }
+
+        /* --- تحسين شكل الزرار --- */
+        .home-btn {
+            margin-top: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            width: 100%;
+            height: 75px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #38bdf8 100%);
+            color: #ffffff; 
+            font-size: 26px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(56, 189, 248, 0.5);
+            filter: brightness(1.1);
+            letter-spacing: 0.5px;
+        }
+
+        .home-btn:active {
+            transform: translateY(0);
+        }
+
+        .lang-switch {
+            position: absolute !important;
+            top: 20px !important;
+            right: 20px !important;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--cyan);
+            padding: 6px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .lang-switch:hover {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media(max-width:700px){
+            .confirm-box { padding: 50px 25px; }
+            h1 { font-size: 32px; }
+            p { font-size: 18px; }
+            .logo { font-size: 38px; } 
+            .home-btn { height: 65px; font-size: 22px; }
+        }
+
+        body.rtl { direction: rtl; }
+    </style>
+</head>
+<body>
+
+<div class="confirm-box">
+    <button class="lang-switch" onclick="toggleLanguage()" id="langBtn">العربية</button>
+    <div class="logo" id="main-logo">Lap<span>ora</span></div>        
+
+    <div class="check-icon">
+        <i class="fa-solid fa-check"></i>
+    </div>
+
+    <h1 id="title">Order Confirmed</h1>
+
+    <p id="desc">
+        We have successfully received your order.<br>
+        Thank you for using our website 💗
+    </p>
+
+    <a href="index.html" class="home-btn" id="homeBtn">Back To Home</a>
+</div>
+
+<script>
+    let currentLang = 'en';
+
+    const translations = {
+        en: {
+            title: "Order Confirmed",
+            desc: "We have successfully received your order.<br>Thank you for using our website 💗",
+            homeBtn: "Back To Home",
+            langBtn: "العربية"
+        },
+        ar: {
+            title: "تم تأكيد الطلب",
+            desc: "لقد استلمنا طلبك بنجاح.<br>شكراً لاستخدامك موقعنا 💗",
+            homeBtn: "العودة للرئيسية",
+            langBtn: "English"
+        }
+    };
+
+    function toggleLanguage() {
+        if (currentLang === 'en') {
+            currentLang = 'ar';
+            document.body.classList.add('rtl');
+            document.getElementById('langBtn').style.right = 'auto';
+            document.getElementById('langBtn').style.left = '20px';
+        } else {
+            currentLang = 'en';
+            document.body.classList.remove('rtl');
+            document.getElementById('langBtn').style.left = 'auto';
+            document.getElementById('langBtn').style.right = '20px';
+        }
+
+        document.getElementById('title').innerText = translations[currentLang].title;
+        document.getElementById('desc').innerHTML = translations[currentLang].desc;
+        document.getElementById('homeBtn').innerText = translations[currentLang].homeBtn;
+        document.getElementById('langBtn').innerText = translations[currentLang].langBtn;
+    }
+</script>
+
+</body>
+</html>

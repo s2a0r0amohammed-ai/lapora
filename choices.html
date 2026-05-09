@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lapora | Choose Usage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+  <style>
+    /* ================= RESET & VARIABLES ================= */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+
+    :root {
+      --bg-dark-navy: #1A2332;       
+      --bg-card-navy: #2B3444;       
+      --text-main-white: #FFFFFF;    
+      --text-secondary-gray: #A0A0A0; 
+      --accent-cyan-light: #5AD7ED;  
+      --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      
+      --cyan: #38bdf8;
+      --purple: #818cf8;
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --glass-bg: rgba(15, 23, 42, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+      color: var(--text-main-white);
+      min-height: 100vh;
+      padding-top: 100px;
+      overflow-x: hidden;
+    }
+
+    /* ================= NAVBAR ================= */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 50px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 9999;
+    }
+
+    .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+    .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+    .logo span { color: #fff; }
+
+    .nav-links { display: flex; gap: 25px; list-style: none; }
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: capitalize;
+      position: relative;
+      padding: 5px 0;
+      transition: var(--transition);
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-links a:hover { color: var(--cyan); }
+
+    .menu-wrapper { position: relative; direction: ltr; }
+    .menu-dots-btn {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; border-radius: 10px; transition: var(--transition);
+    }
+    .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+    .dropdown-list {
+      display: none;
+      position: absolute;
+      top: 55px; right: 0; width: 260px;
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(20px);
+    }
+    .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+    summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+    summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+    details[open] summary::after { transform: rotate(180deg); }
+
+    .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+    .inner-box a, .menu-text-item {
+      color: var(--text-dim);
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      transition: 0.3s;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+    .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+    /* ================= MAIN CONTENT ================= */
+    main { padding: 40px 20px 80px; text-align: center; max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 36px; font-weight: 800; margin-bottom: 12px; color: var(--text-main-white); }
+    .subtitle { font-size: 16px; color: var(--text-dim); margin-bottom: 50px; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--bg-card-navy);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 30px;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      background: #333d4f;
+      border-color: var(--cyan);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    /* تأثير التحديد (التنور) المطلوب */
+    .card.selected {
+      border: 2px solid var(--cyan);
+      background: rgba(56, 189, 248, 0.15); /* خلفية فاتحة شوية */
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2);
+      transform: scale(1.02); /* تكبير بسيط جداً لزيادة التركيز */
+    }
+
+    .card-icon { font-size: 40px; margin-bottom: 15px; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+    .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: var(--cyan); }
+    .card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+    .btn-container { margin-top: 60px; display: flex; justify-content: center; gap: 20px; }
+    
+    .btn {
+      padding: 14px 45px;
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: var(--transition);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn-fill {
+      background: linear-gradient(135deg, var(--cyan), #0099cc);
+      color: white;
+      border: none;
+      box-shadow: 0 8px 15px rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-fill:hover { transform: scale(1.05); opacity: 0.9; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* RTL SUPPORT */
+    body[style*="direction: rtl"] .card { text-align: right; }
+    body[style*="direction: rtl"] .nav-links { flex-direction: row-reverse; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      h1 { font-size: 28px; }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="logo-container">
+      <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+      <div class="logo" id="main-logo">Lap<span>ora</span></div>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="index.html" id="nav-home">home</a></li>
+      <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+      <li><a href="choices.html" id="nav-choices">choices</a></li>
+      <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+      <li><a href="price.html" id="nav-prices">prices</a></li>
+      <li><a href="tips.html" id="nav-tips">tips</a></li>
+      <li><a href="ourteam.html" id="nav-team">our team</a></li>
+    </ul>
+
+    <div class="menu-wrapper">
+      <div class="menu-dots-btn" id="menuBtn">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+
+      <div class="dropdown-list" id="dropdownMenu">
+        <div class="menu-title" id="txt-title">MENU</div>
+
+        <details>
+          <summary id="sum-settings">Settings</summary>
+          <div class="inner-box">
+            <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+            <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+            <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+            <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+          </div>
+        </details>
+
+        <details>
+          <summary id="sum-about">About Us</summary>
+          <div class="inner-box">
+            <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary id="sum-contact">Contact Us</summary>
+          <div class="inner-box">
+            <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+            <a href="tel:+201022948009" id="link-call">📞 Call Us</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <h1 id="main-title">Choose Your Primary Usage</h1>
+    <p class="subtitle" id="main-subtitle">Select one or more to get personalized recommendations</p>
+
+    <div class="cards-grid">
+      <div class="card" onclick="toggleCard(this)">
+        <span class="card-icon">🖥️</span>
+        <h3 id="card-1-t">General Use</h3>
+        <p id="card-1-p">Browsing, office work, everyday tasks</p>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <span class="card-icon">🎮</span>
+        <h3 id="card-2-t">Gaming</h3>
+        <p id="card-2-p">High-performance gaming experience</p>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <span class="card-icon">💻</span>
+        <h3 id="card-3-t">Programming</h3>
+        <p id="card-3-p">Development and coding workflows</p>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <span class="card-icon">📚</span>
+        <h3 id="card-4-t">Studying</h3>
+        <p id="card-4-p">Research, note-taking, online classes</p>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <span class="card-icon">🎨</span>
+        <h3 id="card-5-t">Graphic Design</h3>
+        <p id="card-5-p">Creative work and digital art</p>
+      </div>
+
+      <div class="card" onclick="toggleCard(this)">
+        <span class="card-icon">🎬</span>
+        <h3 id="card-6-t">Video Editing</h3>
+        <p id="card-6-p">Video production and rendering</p>
+      </div>
+    </div>
+
+    <div class="btn-container">
+      <button class="btn btn-outline" id="btn-skip" onclick="window.location.href='recommendations.html'">Skip</button>
+      <button class="btn btn-fill" id="btn-next" onclick="window.location.href='price.html'">Next →</button>
+    </div>
+  </main>
+
+  <script>
+    function toggleCard(el) {
+      el.classList.toggle('selected');
+    }
+
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    menuBtn.onclick = (e) => {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('active');
+    };
+
+    document.onclick = (e) => {
+      if (!dropdownMenu.contains(e.target) && e.target !== menuBtn) {
+        dropdownMenu.classList.remove('active');
+      }
+    };
+
+    function setTheme(mode) {
+      if (mode === 'light') {
+        document.body.style.background = '#f0f4f8';
+        document.documentElement.style.setProperty('--text-main-white', '#1e2030');
+        document.querySelector('.navbar').style.backgroundColor = '#dde3f0';
+        document.querySelector('.dropdown-list').style.background = '#ffffff';
+        document.querySelectorAll('.card').forEach(c => c.style.background = '#fff');
+      } else {
+        document.body.style.background = 'radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%)';
+        document.documentElement.style.setProperty('--text-main-white', '#FFFFFF');
+        document.querySelector('.navbar').style.backgroundColor = 'var(--glass-bg)';
+        document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+        document.querySelectorAll('.card').forEach(c => c.style.background = 'var(--bg-card-navy)');
+      }
+    }
+
+    const translations = {
+      'en': {
+        'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+        'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+        'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 
+        'sum-about': 'About Us', 'sum-contact': 'Contact Us',
+        'main-title': 'Choose Your Primary Usage',
+        'main-subtitle': 'Select one or more to get personalized recommendations',
+        'card-1-t': 'General Use', 'card-1-p': 'Browsing, office work, everyday tasks',
+        'card-2-t': 'Gaming', 'card-2-p': 'High-performance gaming experience',
+        'card-3-t': 'Programming', 'card-3-p': 'Development and coding workflows',
+        'card-4-t': 'Studying', 'card-4-p': 'Research, note-taking, online classes',
+        'card-5-t': 'Graphic Design', 'card-5-p': 'Creative work and digital art',
+        'card-6-t': 'Video Editing', 'card-6-p': 'Video production and rendering',
+        'btn-next': 'Next →', 'btn-skip': 'Skip'
+      },
+      'ar': {
+        'nav-home': 'الرئيسية', 'nav-signin': 'تسجيل الدخول', 'nav-choices': 'الخيارات',
+        'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+        'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 
+        'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا',
+        'main-title': 'اختر طبيعة استخدامك الأساسية',
+        'main-subtitle': 'اختر خياراً أو أكثر للحصول على ترشيحات مخصصة لك',
+        'card-1-t': 'استخدام عام', 'card-1-p': 'تصفح، أعمال مكتبية، مهام يومية',
+        'card-2-t': 'الألعاب', 'card-2-p': 'تجربة ألعاب عالية الأداء',
+        'card-3-t': 'البرمجة', 'card-3-p': 'تطوير البرمجيات وكتابة الأكواد',
+        'card-4-t': 'الدراسة', 'card-4-p': 'بحث، تدوين ملاحظات، حصص أونلاين',
+        'card-5-t': 'التصميم الجرافيكي', 'card-5-p': 'الأعمال الإبداعية والفن الرقمي',
+        'card-6-t': 'مونتاج الفيديو', 'card-6-p': 'إنتاج الفيديو ومعالجته',
+        'btn-next': 'التالي ←', 'btn-skip': 'تخطي'
+      }
+    };
+
+    function changeLang(lang) {
+      const t = translations[lang];
+      for (let id in t) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = t[id];
+      }
+      document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+      dropdownMenu.style.right = (lang === 'ar') ? 'auto' : '0';
+      dropdownMenu.style.left = (lang === 'ar') ? '0' : 'auto';
+    }
+  </script>
+</body>
+</html>

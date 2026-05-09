@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labora - Programming Laptops</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <style>
+        :root {
+            --bg-main: #1e2030;
+            --card-bg: #252840;
+            --primary-cyan: #00d4ff;
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --text-gray: #9399b2;
+            --border-color: #3a3f5c;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Trebuchet MS", sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        body.light-mode {
+            --card-bg: #ffffff; --text-main: #1e2030; --text-gray: #555e7a;
+            --border-color: #c5cde0; --glass-bg: rgba(240,244,248,0.95); --border: rgba(0,0,0,0.1);
+        }
+        body.light-mode { background: #f0f4f8; }
+        .light-mode .dropdown-list { background: #ffffff; }
+        .light-mode summary { color: #1e2030; }
+
+        .navbar {
+            display: flex; align-items: center; justify-content: space-between; padding: 15px 50px;
+            background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; width: 100%; z-index: 9999;
+        }
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo-text { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo-text span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 600;
+            text-transform: capitalize; position: relative; padding: 5px 0; transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple)); transform: scaleX(0); transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff; background: rgba(255,255,255,0.05); width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none; position: absolute; top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98); border: 1px solid var(--border);
+            border-radius: 20px; padding: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        summary { color: #fff;cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { color: var(--text-dim); text-decoration: none; display: block; padding: 10px; transition: 0.3s; font-size: 0.9em; line-height: 1.5; }
+        .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+        .range-section { text-align: center; margin: 40px 0; padding: 0 20px; }
+        .range-title { color: var(--cyan); font-size: 2.2em; margin-bottom: 10px; font-weight: 800; }
+        mark {
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #000; border-radius: 8px; padding: 5px 20px; font-weight: bold; font-size: 1.1em;
+        }
+        .focus-text { color: var(--text-gray); margin-top: 15px; font-size: 1em; font-style: italic; }
+
+        .sort-container { display: flex; justify-content: center; margin-top: 30px; margin-bottom: 30px; }
+        #sort {
+            padding: 10px 20px; border-radius: 12px; background: var(--card-bg);
+            color: white; border: 1px solid var(--border); cursor: pointer; outline: none; transition: 0.3s;
+        }
+        #sort:hover { border-color: var(--cyan); }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; padding: 20px 0; }
+
+        .product-card {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
+            overflow: hidden; transition: var(--transition); display: flex; flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .product-card:hover { transform: translateY(-10px); border-color: var(--cyan); box-shadow: 0 15px 40px rgba(56, 189, 248, 0.15); }
+
+        .image-container { height: 200px; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; padding: 15px; }
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .laptop-details { padding: 25px; flex-grow: 1; }
+        .laptop-details h3 { font-size: 20px; margin-bottom: 12px; color: #fff; }
+        .specs-list { list-style: none; padding: 0; font-size: 16px; color: var(--text-dim); margin-bottom: 15px; }
+        .specs-list li { margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .special-feature { font-size: 15px; color: #cbd5e1; line-height: 1.5; margin-bottom: 15px; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px; }
+        .price { color: var(--primary-cyan); font-weight: 800; font-size: 17px; }
+        .btn-link { background: var(--cyan); color: #020617; text-decoration: none; padding: 10px 25px; border-radius: 10px; font-weight: 800; transition: 0.3s; }
+        .btn-link:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+
+        .footer-actions { display: flex; justify-content: center; padding: 50px 0; }
+        .btn-next {
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #fff; padding: 15px 80px; border-radius: 15px; font-weight: 800;
+            text-decoration: none; transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-next:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(129, 140, 248, 0.4); }
+
+        @media (max-width: 768px) { .product-grid { grid-template-columns: 1fr; } .navbar { padding: 15px 25px; } .nav-links { display: none; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo-text">Lap<span>ora</span></div>
+        </div>
+
+        <ul class="nav-links">
+           <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+        </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p class="menu-text-item" id="txt-about">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:01022948009" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <div class="range-section">
+        <div class="range-title" id="txt-range">Programming 💻</div>
+        <mark id="txt-category">More Than 50,000 EGP</mark>
+        <p class="focus-text" id="txt-focus">Environment stability, powerful virtualization, blazing compilation speeds — built for developers, engineers, and DevOps professionals.</p>
+    </div>
+
+    <div class="sort-container">
+        <select id="sort" onchange="sortProducts()">
+            <option value="low" id="opt-low">Price: Low to High</option>
+            <option value="high" id="opt-high">Price: High to Low</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <div class="product-grid" id="productList">
+
+            <div class="product-card" data-price="135000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIF.tux1DBRNlByqRTk5eVygyg?w=193&h=186&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="MacBook Pro 14"></div>
+                <div class="laptop-details">
+                    <h3 id="p1-name">MacBook Pro 14" (M3 Pro)</h3>
+                    <ul class="specs-list">
+                        <li id="p1-cpu">⚙️ processor: Apple M3 Pro (12-Core)</li>
+                        <li id="p1-ram">💾 Ram: 36GB Unified Memory</li>
+                        <li id="p1-ssd">📁 Storage: 1TB SSD</li>
+                    </ul>
+                    <p class="special-feature" id="p1-feat">Special Feature: The Unified Memory architecture allows the CPU and GPU to share data instantly, perfect for AI models and Docker containers.</p>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">135,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.html" class="btn-link buy-btn">Buy</a>
+                    </div>
+                </div></div>
+
+            <div class="product-card" data-price="145000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.qLA5SsADE7uCm9HdaoRh2QHaHa?w=195&h=195&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="Dell Precision 5680"></div>
+                <div class="laptop-details">
+                    <h3 id="p2-name">Dell Precision 5680</h3>
+                    <ul class="specs-list">
+                        <li id="p2-cpu">⚙️ processor: Intel Core i9-13900H</li>
+                        <li id="p2-ram">💾 Ram: 32GB DDR5</li>
+                        <li id="p2-ssd">📁 Storage: 1TB Gen4 NVMe SSD</li>
+                    </ul>
+                    <p class="special-feature" id="p2-feat">Special Feature: Professional workstation with ISV Certification, tested for maximum stability with engineering software.</p>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">145,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.html" class="btn-link buy-btn">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-price="155000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.I8hdRiXmP4G43CCDILXunwHaHa?w=205&h=182&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="ThinkPad P1 Gen 7"></div>
+                <div class="laptop-details">
+                    <h3 id="p3-name">Lenovo ThinkPad P1 Gen 7</h3>
+                    <ul class="specs-list">
+                        <li id="p3-cpu">⚙️ processor: Intel Core Ultra 9 285H</li>
+                        <li id="p3-ram">💾 Ram: 64GB DDR5</li>
+                        <li id="p3-ssd">📁 Storage: 2TB SSD</li>
+                    </ul>
+                    <p class="special-feature" id="p3-feat">Special Feature: Iconic ThinkPad Keyboard for long coding sessions and dual-fan cooling for heavy compilation loads.</p>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">155,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.html" class="btn-link buy-btn">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-price="92000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.Iv81YuA7HFVQ8shqb_wW0QHaFj?w=243&h=182&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="ASUS Zenbook S 14"></div>
+                <div class="laptop-details">
+                    <h3 id="p4-name">ASUS Zenbook S 14</h3>
+                    <ul class="specs-list">
+                        <li id="p4-cpu">⚙️ processor: Intel Core Ultra 7 258V</li>
+                        <li id="p4-ram">💾 Ram: 32GB LPDDR5X</li>
+                        <li id="p4-ssd">📁 Storage: 1TB PCIe 4.0 SSD</li>
+                    </ul>
+                    <p class="special-feature" id="p4-feat">Special Feature: Whisper-quiet cooling and "Ceraluminum" build. Incredibly light for developers on the move.</p>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">92,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.html" class="btn-link buy-btn">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <a href="tips.html" class="btn-next" id="btn-next">NEXT</a>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+        btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('active'); };
+        document.onclick = (e) => { if (!menu.contains(e.target) && e.target !== btn) menu.classList.remove('active'); };
+
+        function setTheme(m) { document.body.classList.toggle("light-mode", m === "light"); }
+
+        function sortProducts() {
+            const grid = document.getElementById('productList');
+            const cards = Array.from(grid.getElementsByClassName('product-card'));
+            const criteria = document.getElementById('sort').value;
+            cards.sort((a, b) => {
+                constpriceA = parseInt(a.getAttribute('data-price'));
+                const priceB = parseInt(b.getAttribute('data-price'));
+                return criteria === 'low' ? priceA - priceB : priceB - priceA;
+            });
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                    'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                    'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings',
+                    'sum-about': 'About Us', 'sum-contact': 'Contact Us',
+                    'txt-about': 'Labora is a premium store for high-end laptops.',
+                    'link-email': '✉️ Email Us', 'link-call': '📞 Call Us',
+                    'theme-dark': '🌙 Dark Mode', 'theme-light': '☀️ Light Mode',
+                    'txt-range': 'Programming 💻', 'txt-category': 'More Than 50,000 EGP',
+                    'txt-focus': 'Environment stability, powerful virtualization, blazing compilation speeds — built for developers, engineers, and DevOps professionals.',
+                    'btn-next': 'NEXT',
+                    'opt-low': 'Price: Low to High', 'opt-high': 'Price: High to Low',
+                    'p1-name': 'MacBook Pro 14" (M3 Pro)',
+                    'p1-cpu': '⚙️ processor: Apple M3 Pro (12-Core)', 'p1-ram': '💾 Ram: 36GB Unified Memory', 'p1-ssd': '📁 Storage: 1TB SSD',
+                    'p1-feat': 'Special Feature: The Unified Memory architecture allows the CPU and GPU to share data instantly, perfect for AI models and Docker containers.',
+                    'p2-name': 'Dell Precision 5680',
+                    'p2-cpu': '⚙️ processor: Intel Core i9-13900H', 'p2-ram': '💾 Ram: 32GB DDR5', 'p2-ssd': '📁 Storage: 1TB Gen4 NVMe SSD',
+                    'p2-feat': 'Special Feature: Professional workstation with ISV Certification, tested for maximum stability with engineering software.',
+                    'p3-name': 'Lenovo ThinkPad P1 Gen 7',
+                    'p3-cpu': '⚙️ processor: Intel Core Ultra 9 285H', 'p3-ram': '💾 Ram: 64GB DDR5', 'p3-ssd': '📁 Storage: 2TB SSD',
+                    'p3-feat': 'Special Feature: Iconic ThinkPad Keyboard for long coding sessions and dual-fan cooling for heavy compilation loads.',
+                    'p4-name': 'ASUS Zenbook S 14',
+                    'p4-cpu': '⚙️ processor: Intel Core Ultra 7 258V', 'p4-ram': '💾 Ram: 32GB LPDDR5X', 'p4-ssd': '📁 Storage: 1TB PCIe 4.0 SSD',
+                    'p4-feat': 'Special Feature: Whisper-quiet cooling and "Ceraluminum" build. Incredibly light for developers on the move.'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'تسجيل الدخول', 'nav-choices': 'الخيارات',
+                    'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                    'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات',
+                    'sum-about': 'من نحن', 'sum-contact': 'تواصل معنا',
+                    'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب عالية الإمكانيات.',
+                    'link-email': '✉️ راسلنا بريدياً', 'link-call': '📞 اتصل بنا',
+                    'theme-dark': '🌙 الوضع الداكن', 'theme-light': '☀️ الوضع الفاتح',
+                    'txt-range': 'البرمجة 💻', 'txt-category': 'أكثر من ٥٠,٠٠٠ جنيه',
+                    'txt-focus': 'استقرار البيئة، الأنظمة الوهمية، وسرعة معالجة الكود — مصممة للمطورين والمهندسين ومتخصصي DevOps.',
+                    'btn-next': 'التالي',
+                    'opt-low': 'السعر: من الأقل للأعلى', 'opt-high': 'السعر: من الأعلى للأقل',
+                    'p1-name': 'MacBook Pro 14" (M3 Pro)',
+                    'p1-cpu': '⚙️ المعالج: Apple M3 Pro (12-Core)', 'p1-ram': '💾 الرامات: 36GB Unified Memory', 'p1-ssd': '📁 التخزين: 1TB SSD',
+                    'p1-feat': 'ميزة خاصة: معمارية الذاكرة الموحدة تسمح للمعالج ومعالج الرسومياتبمشاركة البيانات فوراً، مثالي للذكاء الاصطناعي وحاويات Docker.',
+                    'p2-name': 'Dell Precision 5680',
+                    'p2-cpu': '⚙️ المعالج: Intel Core i9-13900H', 'p2-ram': '💾 الرامات: 32GB DDR5', 'p2-ssd': '📁 التخزين: 1TB Gen4 NVMe SSD',
+                    'p2-feat': 'ميزة خاصة: محطة عمل احترافية مع شهادة ISV، تم اختبارها لأقصى درجات الاستقرار مع برامج الهندسة.',
+                    'p3-name': 'Lenovo ThinkPad P1 Gen 7',
+                    'p3-cpu': '⚙️ المعالج: Intel Core Ultra 9 285H', 'p3-ram': '💾 الرامات: 64GB DDR5', 'p3-ssd': '📁 التخزين: 2TB SSD',
+                    'p3-feat': 'ميزة خاصة: لوحة مفاتيح ThinkPad الشهيرة لجلسات الكود الطويلة وتبريد ثنائي للمهام الثقيلة.',
+                    'p4-name': 'ASUS Zenbook S 14',
+                    'p4-cpu': '⚙️ المعالج: Intel Core Ultra 7 258V', 'p4-ram': '💾 الرامات: 32GB LPDDR5X', 'p4-ssd': '📁 التخزين: 1TB PCIe 4.0 SSD',
+                    'p4-feat': 'ميزة خاصة: تبريد صامت وبناء من مادة "Ceraluminum". خفيف الوزن جداً للمبرمجين كثيري الحركة.'
+                }
+            };
+
+            for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = data[lang][id];
+            }
+
+            document.querySelectorAll('.currency').forEach(el => el.innerText = (lang === 'ar' ? 'جنيه مصري تقريباً' : 'EGP approx.'));
+            document.querySelectorAll('.buy-btn').forEach(el => el.innerText = (lang === 'ar' ? 'شراء' : 'Buy'));
+
+            document.body.setAttribute("dir", lang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute("lang", lang);
+            menu.style.right = lang === 'ar' ? 'auto' : '0';
+            menu.style.left = lang === 'ar' ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>

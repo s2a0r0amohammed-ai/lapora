@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labora | Tips</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* ================= RESET & VARIABLES (From Price Page) ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --accent-cyan-light: #5AD7ED;  
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: white;
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR (Identical to Price Page) ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title {color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px; 
+            transition: 0.3s; 
+            font-size: 0.9em; 
+            line-height: 1.5;
+        }
+        .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* ================= TIPS CONTENT (Integrated Style) ================= */
+        .main-tips-page {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6, #60a5fa);
+            border-radius: 18px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-section h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .tip-card {
+            background: #0f172a;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
+        }
+
+        .tip-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--cyan);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1);
+        }
+
+        .tip-card h3 {
+            color: var(--cyan);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .tip-card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .footer-link a {
+            color: var(--cyan);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+
+        .footer-link a:hover {
+            color: var(--purple);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .tips-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; }
+        }
+
+        /* RTL Adjustments */
+        body[style*="direction: rtl"] .nav-links { flex-direction: row-reverse; }
+        body[style*="direction: rtl"] .tip-card { text-align: right; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo" id="main-logo">Lap<span>ora</span></div>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+        </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+            
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:01022948009" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-tips-page">
+        <div class="header-section">
+            <h1 id="page-title">Tips And Guidelines To Protect Your Laptop</h1>
+        </div>
+
+        <div class="tips-grid">
+            <div class="tip-card">
+                <h3 id="tip1-t">1. Shut down regularly :</h3>
+                <p id="tip1-p1">• Don't leave it running for days.</p>
+                <p id="tip1-p2">• Restart at least once a week to clear memory and install updates.</p>
+            </div>
+
+            <div class="tip-card">
+                <h3 id="tip2-t">2. Keep It On a Hard And Flat Surface :</h3>
+                <p id="tip2-p1">• Never use it on soft surfaces (bed, sofa, pillow).</p>
+                <p id="tip2-p2">• Blocked vents cause overheating.</p>
+            </div>
+
+            <div class="tip-card">
+                <h3 id="tip3-t">3. Clean Dust From Vents Monthly :</h3>
+                <p id="tip3-p1">• Use compressed air.</p>
+                <p id="tip3-p2">• Dust buildup kills cooling fans and reduces performance.</p>
+            </div>
+
+            <div class="tip-card">
+                <h3 id="tip4-t">4. Avoid Liquids And Food Near The Laptop</h3>
+                <p id="tip4-p1">• Spilled liquid can short-circuit the motherboard.</p>
+                <p id="tip4-p2">• Food crumbs damage keys.</p>
+            </div>
+
+            <div class="tip-card">
+                <h3 id="tip5-t">5. Manage Battery Health :</h3>
+                <p id="tip5-p1">• Keep charge between 20% and 80%.</p>
+                <p id="tip5-p2">• Don't leave it plugged in 24/7.</p>
+            </div>
+
+            <div class="tip-card">
+                <h3 id="tip6-t">6. Update Software And Run Antivirus :</h3>
+                <p id="tip6-p1">• Regular updates fix security holes.</p>
+                <p id="tip6-p2">• Scan for malware weekly.</p>
+            </div>
+        </div>
+
+        <div class="footer-link">
+            <a href="https://www.youtube.com/watch?v=o4CWfG4V4gs" target="_blank" id="yt-link">🔗 Watch the full guide on YouTube</a>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        };
+
+        document.onclick = (e) => {
+            if (!menu.contains(e.target) && e.target !== btn) {
+                menu.classList.remove('active');
+            }
+        };
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = '#f0f4f8';
+                document.documentElement.style.setProperty('--text-main-white', '#1e2030');
+                document.querySelector('.navbar').style.backgroundColor = '#dde3f0';
+                document.querySelector('.dropdown-list').style.background = '#ffffff';
+                document.querySelectorAll('.tip-card').forEach(card => {
+                    card.style.background = '#fff';
+                    card.style.borderColor = '#c5cde0';
+                });
+                document.getElementById('page-title').style.color = '#fff';
+            } else {
+                document.body.style.background = 'radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%)';
+                document.documentElement.style.setProperty('--text-main-white', '#FFFFFF');
+                document.querySelector('.navbar').style.backgroundColor = 'var(--glass-bg)';
+                document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+                document.querySelectorAll('.tip-card').forEach(card => {
+                    card.style.background = '#0f172a';
+                    card.style.borderColor = 'rgba(255,255,255,0.05)';
+                });
+            }
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                    'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                    'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 
+                    'sum-about': 'About Us', 'sum-contact': 'Contact Us', 
+                    'txt-about': 'Labora is a premium store for high-end laptops.',
+                    'page-title': 'Tips And Guidelines To Protect Your Laptop',
+                    'tip1-t': '1. Shut down regularly :', 'tip1-p1': "• Don't leave it running for days.", 'tip1-p2': '• Restart at least once a week to clear memory and install updates.',
+                    'tip2-t': '2. Keep It On a Hard And Flat Surface :', 'tip2-p1': '• Never use it on soft surfaces (bed, sofa, pillow).', 'tip2-p2': '• Blocked vents cause overheating.',
+                    'tip3-t': '3. Clean Dust From Vents Monthly :', 'tip3-p1': '• Use compressed air.', 'tip3-p2': '• Dust buildup kills cooling fans and reduces performance.',
+                    'tip4-t': '4. Avoid Liquids And Food Near The Laptop', 'tip4-p1': '• Spilled liquid can short-circuit the motherboard.', 'tip4-p2': '• Food crumbs damage keys.',
+                    'tip5-t': '5. Manage Battery Health :', 'tip5-p1': '• Keep charge between 20% and 80%.', 'tip5-p2': "• Don't leave it plugged in 24/7.",
+                    'tip6-t': '6. Update Software And Run Antivirus :', 'tip6-p1': '• Regular updates fix security holes.', 'tip6-p2': '• Scan for malware weekly.',
+                    'yt-link': '🔗 Watch the full guide on YouTube'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'الدخول', 'nav-choices': 'الخيارات',
+                    'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                    'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 
+                    'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا', 
+                    'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب المتطورة.',
+                    'page-title': 'نصائح وإرشادات لحماية لابتوبك',
+                    'tip1-t': '١. أعد التشغيل بانتظام:', 'tip1-p1': '• لا تتركه يعمل لأيام متواصلة.', 'tip1-p2': '• أعد التشغيل مرة أسبوعياً لمسح الذاكرة وتثبيت التحديثات.',
+                    'tip2-t': '٢. ضعه على سطح صلب ومستوٍ:', 'tip2-p1': '• لا تستخدمه على أسطح ناعمة (سرير، أريكة، وسادة).', 'tip2-p2': '• انسداد فتحات التهوية يسبب ارتفاع الحرارة.','tip3-t': '٣. نظّف الغبار من فتحات التهوية شهرياً:', 'tip3-p1': '• استخدم هواء مضغوط.', 'tip3-p2': '• تراكم الغبار يتلف مراوح التبريد ويقلل الأداء.',
+                    'tip4-t': '٤. ابتعد عن السوائل والطعام بجانب اللابتوب', 'tip4-p1': '• انسكاب السوائل قد يتسبب في ماس كهربائي باللوحة الأم.', 'tip4-p2': '• فتات الطعام يتلف المفاتيح.',
+                    'tip5-t': '٥. حافظ على صحة البطارية:', 'tip5-p1': '• احتفظ بالشحن بين ٢٠٪ و٨٠٪.', 'tip5-p2': '• لا تتركه موصولاً بالكهرباء طوال الوقت.',
+                    'tip6-t': '٦. حدّث البرامج وشغّل مضاد الفيروسات:', 'tip6-p1': '• التحديثات المنتظمة تسد ثغرات الأمان.', 'tip6-p2': '• افحص الجهاز بحثاً عن برامج ضارة أسبوعياً.',
+                    'yt-link': '🔗 شاهد الدليل الكامل على يوتيوب'
+                }
+            };
+
+            for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = data[lang][id];
+            }
+            
+            document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+            menu.style.right = (lang === 'ar') ? 'auto' : '0';
+            menu.style.left = (lang === 'ar') ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>

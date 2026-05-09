@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lapora | Recommendations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* ================= RESET & VARIABLES (From Source Page) ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --accent-cyan-light: #5AD7ED;  
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: white;
+            padding-top: 100px;
+            min-height: 100vh;
+            transition: background 0.4s ease;
+        }
+
+        /* ================= NAVBAR (Identical to Source Page) ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+@keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px; 
+            transition: 0.3s; 
+            font-size: 0.9em; 
+            line-height: 1.5;
+        }
+        .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* ================= CONTENT STYLING ================= */
+        h2 { text-align: center; color: var(--cyan); margin: 40px 0 20px; font-weight: 800; }
+
+        table {
+            width: 90%;
+            max-width: 1100px;
+            margin: 20px auto;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        th {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--cyan);
+            font-size: 18px;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .box { 
+            background: var(--bg-card-navy); 
+            padding: 12px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            transition: 0.3s;
+        }
+
+        .cards { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; }
+
+        .card {
+            background: var(--bg-card-navy);
+            padding: 15px; border-radius: 15px;
+            width: 220px; text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .card:hover { 
+            transform: translateY(-5px); 
+            border-color: var(--cyan);
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.15); 
+        }
+
+        .card img {
+            width: 100%; height: 140px;
+            object-fit: cover; border-radius: 10px; margin-top: 10px;
+        }
+
+        .next-container { text-align: center; margin: 50px 0; }
+        
+        /* Updated Button Colors to Blue and Cyan */
+        .next-btn {
+            display: inline-block; padding: 12px 35px;
+            background: linear-gradient(90deg, #0ea5e9, #5AD7ED); /* Deep Blue to Cyan */
+            color: #000;
+            font-weight: 800;
+            text-decoration: none; border-radius: 30px;
+            transition: 0.3s;
+        }
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; }
+            table { width: 95%; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo">Lap<span>ora</span></div>
+        </div>
+<ul class="nav-links">
+          <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+        </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+            
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:01022948009" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <h2 id="title1">Usage vs Specifications</h2>
+    <table>
+        <tr><th id="th-usage1">Usage</th><th id="th-spec">Specifications</th></tr>
+        <tr>
+            <td><div class="box" id="box-general">💻 General</div></td>
+            <td><div class="box">CPU: Intel Core i3/i5 or AMD Ryzen3 / RAM: 8GB / Storage: 256GB SSD / GPU: Integrated Graphics / Display: HD/Full HD / Battery: 5-8h</div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-gaming">🎮 Gaming</div></td>
+            <td><div class="box">CPU: Intel Core i7 or AMD Ryzen5/7 / RAM: 16GB / Storage: 512GB SSD / GPU: RTX 4060 / NVIDIA GTX / Display: Full HD 144Hz / Battery: 3-6h</div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-prog">👨‍💻 Programming</div></td>
+            <td><div class="box">CPU: Intel Core i5/i7 / RAM: 16GB / Storage: 512GB SSD / GPU: Integrated (Dedicated optional) / Display: Full HD / Battery: 6-9h</div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-study">📚 Studying</div></td>
+            <td><div class="box">CPU: Intel Core i3/i5 or AMD Ryzen3 / RAM: 8GB / Storage: 256GB SSD / GPU: Integrated Graphics / Display: HD/Full HD / Battery: 5-8h</div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-design">🎨 Graphic Design</div></td>
+            <td><div class="box">CPU: Intel Core i7 or AMD Ryzen7 / RAM: 32GB / Storage: 1TB / GPU: NVIDIA RTX 3050 / Display: IPS, High color accuracy / Battery: 5-8h</div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-video">🎬 Video Editing</div></td>
+            <td><div class="box">CPU: Intel i7/i9 or AMD Ryzen9 / RAM: 32GB / Storage: 1TB / GPU: NVIDIA RTX 3060 / Display: 4K Editing Support / Battery: 4-7h</div></td>
+        </tr>
+    </table>
+<h2 id="title2">Usage vs Budget Recommendation</h2>
+    <table>
+        <tr><th id="th-usage2">Usage</th><th id="th-budget">Budget</th></tr>
+        <tr>
+            <td><div class="box" id="box-general2">💻 General</div></td>
+            <td><div class="cards"><div class="card">Lenovo IdeaPad 3<br>💰 15,000 - 22,000 EGP<br><img src="https://m.media-amazon.com/images/I/51RFjF7g9rL._AC_SL1500_.jpg"></div></div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-gaming2">🎮 Gaming</div></td>
+            <td><div class="cards"><div class="card">Acer Nitro 5<br>💰 45,000 - 80,000 EGP<br><img src="https://i.ebayimg.com/images/g/zI0AAOSwoWtnK9CX/s-l1600.webp"></div></div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-prog2">👨‍💻 Programming</div></td>
+            <td><div class="cards"><div class="card">Dell Inspiron 15 3520<br>💰 25,000 - 40,000 EGP<br><img src="https://m.media-amazon.com/images/I/61XEJCUlVHL._AC_SL1200_.jpg"></div></div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-study2">📚 Studying</div></td>
+            <td><div class="cards"><div class="card">HP 14s<br>💰 12,000 - 18,000 EGP<br><img src="https://i.ebayimg.com/images/g/9mAAAeSwOh5py7dj/s-l1600.webp"></div></div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-design2">🎨 Graphic Design</div></td>
+            <td><div class="cards"><div class="card">ASUS VivoBook Pro 15<br>💰 35,000 - 55,000 EGP<br><img src="https://m.media-amazon.com/images/I/71h8CUWc-0L._AC_SX425_.jpg"></div></div></td>
+        </tr>
+        <tr>
+            <td><div class="box" id="box-video2">🎬 Video Editing</div></td>
+            <td><div class="cards"><div class="card">MacBook Pro M2<br>💰 60,000 - 120,000 EGP<br><img src="https://i.ebayimg.com/images/g/0ZoAAeSwYwFpysJL/s-l1600.webp"></div></div></td>
+        </tr>
+    </table>
+
+    <div class="next-container">
+        <a href="price.html" class="next-btn" id="next-btn-text">Next ➜</a>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        };
+
+        document.onclick = (e) => {
+            if (!menu.contains(e.target) && e.target !== btn) {
+                menu.classList.remove('active');
+            }
+        };
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = '#f0f4f8';
+                document.body.style.color = '#1e2030';
+                document.querySelector('.navbar').style.backgroundColor = '#dde3f0';
+                document.querySelector('.dropdown-list').style.background = '#ffffff';
+                document.querySelectorAll('.box, .card').forEach(el => {
+                    el.style.background = '#fff';
+                    el.style.color = '#1e2030';
+                });
+            } else {
+                document.body.style.background = 'radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%)';
+                document.body.style.color = 'white';
+                document.querySelector('.navbar').style.backgroundColor = 'var(--glass-bg)';
+                document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+                document.querySelectorAll('.box, .card').forEach(el => {
+                    el.style.background = 'var(--bg-card-navy)';
+                    el.style.color = 'white';
+                });
+            }
+        }
+
+        const translations = {
+            en: {
+                'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 
+                'sum-about': 'About Us', 'sum-contact': 'Contact Us', 
+                'txt-about': 'Labora is a premium store for high-end laptops.',
+                title1:'Usage vs Specifications', title2:'Usage vs Budget Recommendation',
+                thUsage1:'Usage', thSpec:'Specifications', thUsage2:'Usage', thBudget:'Budget',
+                general:'💻 General', gaming:'🎮 Gaming', prog:'👨‍💻 Programming',
+                study:'📚 Studying', design:'🎨 Graphic Design', video:'🎬 Video Editing',
+                next:'Next ➜'
+            },
+            ar: {
+                'nav-home': 'الرئيسية', 'nav-signin': 'الدخول', 'nav-choices': 'الخيارات',
+                'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 
+                'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا', 
+                'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب المتطورة.',
+                title1:'الاستخدام مقابل المواصفات', title2:'الاستخدام مقابل الميزانية',
+                thUsage1:'الاستخدام', thSpec:'المواصفات', thUsage2:'الاستخدام', thBudget:'الميزانية',
+                general:'💻 عام', gaming:'🎮 ألعاب', prog:'👨‍💻 برمجة',
+                study:'📚 دراسة', design:'🎨 تصميم جرافيك', video:'🎬 مونتاج فيديو',
+                next:'التالي ➜'
+            }
+        };
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            for (let id in t) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = t[id];
+            }
+
+            document.getElementById('box-general').innerText = t.general;
+            document.getElementById('box-general2').innerText = t.general;
+            document.getElementById('box-gaming').innerText = t.gaming;
+            document.getElementById('box-gaming2').innerText = t.gaming;
+            document.getElementById('box-prog').innerText = t.prog;
+            document.getElementById('box-prog2').innerText = t.prog;
+            document.getElementById('box-study').innerText = t.study;
+            document.getElementById('box-study2').innerText = t.study;
+            document.getElementById('box-design').innerText = t.design;
+            document.getElementById('box-design2').innerText = t.design;
+            document.getElementById('box-video').innerText = t.video;
+            document.getElementById('box-video2').innerText = t.video;
+            document.getElementById('next-btn-text').innerText = t.next;
+
+            document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+            menu.style.right = (lang === 'ar') ? 'auto' : '0';
+            menu.style.left = (lang === 'ar') ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>

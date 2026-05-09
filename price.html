@@ -1,0 +1,513 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labora | Prices</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* ================= RESET & VARIABLES ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --accent-cyan-light: #5AD7ED;  
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: white;
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px; 
+            transition: 0.3s; 
+            font-size: 0.9em; 
+            line-height: 1.5;
+        }
+        .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-selection-page {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* المربع المميز مع الحركة */
+        .selection-card {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6, #60a5fa);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+            transition: 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .selection-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+        }
+
+        /* تأثير اللمعان */
+        .selection-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%);
+            transform: rotate(25deg);
+            animation: shine 6s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-30%) rotate(25deg); }
+            100% { transform: translateX(30%) rotate(25deg); }
+        }
+
+        .explore-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .separator {
+            border: none;
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+            margin: 30px 0;
+        }
+
+        .section-title span { color: #3b82f6; }
+
+        /* ================= FLOATING PRICE DROPDOWN ================= */
+        .usecase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .usecase-item { position: relative; }
+
+        .cat-btn {
+            width: 100%;
+            background: #0f172a;
+            color: #fff;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .cat-btn:hover { border-color: var(--cyan); background: rgba(56, 189, 248, 0.05); }
+        .cat-btn.active { border-color: var(--cyan); border-radius: 12px 12px 0 0; }
+
+        .price-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #1e293b;
+            border-radius: 0 0 12px 12px;
+            padding: 12px;
+            border: 1px solid var(--cyan);
+            border-top: none;
+            z-index: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);flex-direction: column;
+            gap: 8px;
+        }
+
+        .price-dropdown.show { display: flex; animation: dropFade 0.3s ease; }
+
+        @keyframes dropFade {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .range-btn {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-dim);
+            border: 1px solid transparent;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .range-btn:hover {
+            background: var(--cyan);
+            color: #000;
+            transform: scale(1.02);
+        }
+
+        body[style*="direction: rtl"] .cat-btn i { transform: rotate(0deg); }
+        body[style*="direction: rtl"] .cat-btn.active i { transform: rotate(180deg); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo" id="main-logo">Lap<span>ora</span></div>
+        </div>
+
+        <ul class="nav-links">
+           <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+        </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+            
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:01022948009" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-selection-page">
+        <div class="all-laptops-section">
+            <div class="selection-card">
+                <div class="card-content">
+                    <h3 id="txt-all-title">All Laptops</h3>
+                    <p id="txt-all-desc">Explore our entire collection of high-end laptops</p>
+                     <button class="explore-btn" id="btn-explore" onclick="window.location.href='all.html'">Show All &rarr;</button>
+                </div>
+            </div>
+        </div>
+
+        <hr class="separator"> 
+        
+        <div class="price-category-section">
+            <h2 class="section-title" id="txt-price-cat">Price <span>Categories</span></h2>
+            
+            <div class="usecase-grid">
+                <div class="usecase-item">
+                    <button class="cat-btn" onclick="toggleDropdown(this)">
+                        <span id="cat-1">General Use</span> <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="price-dropdown">
+                        <button class="range-btn" onclick="location.href='general_20000_30000.html'">20,000 : 30,000</button>
+                        <button class="range-btn" onclick="location.href='general_31000_40000.html'">31,000 : 40,000</button>
+                        <button class="range-btn" onclick="location.href='general_41000_50000.html'">41,000 : 50,000</button>
+                        <button class="range-btn range-4-text" onclick="location.href='general_more_than_50000.html'">More than 50,000</button>
+                    </div>
+                </div>
+
+                <div class="usecase-item">
+                    <button class="cat-btn" onclick="toggleDropdown(this)">
+                        <span id="cat-2">Gaming</span> <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="price-dropdown">
+                        <button class="range-btn" onclick="location.href='gaming_20000_30000.html'">20,000 : 30,000</button>
+                        <button class="range-btn" onclick="location.href='gaming_31000_40000.html'">31,000 : 40,000</button>
+                        <button class="range-btn" onclick="location.href='gaming_41000_50000.html'">41,000 : 50,000</button>
+                        <button class="range-btn range-4-text" onclick="location.href='gaming_more_than_50000.html'">More than 50,000</button>
+                    </div>
+                </div>
+
+                <div class="usecase-item">
+                    <button class="cat-btn" onclick="toggleDropdown(this)">
+                        <span id="cat-3">Programming</span> <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="price-dropdown">
+                        <button class="range-btn" onclick="location.href='programming_20000_30000.html'">20,000 : 30,000</button>
+                        <button class="range-btn" onclick="location.href='programming_31000_40000.html'">31,000 : 40,000</button>
+                        <button class="range-btn" onclick="location.href='programming_41000_50000.html'">41,000 : 50,000</button>
+                        <button class="range-btn range-4-text" onclick="location.href='programming_more_than_50000.html'">More than 50,000</button>
+                    </div>
+                </div>
+
+                <div class="usecase-item">
+                    <button class="cat-btn" onclick="toggleDropdown(this)">
+                        <span id="cat-4">Studying</span> <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="price-dropdown">
+                        <button class="range-btn" onclick="location.href='studying_20000_30000.html'">20,000 : 30,000</button>
+                        <button class="range-btn" onclick="location.href='studying_31000_40000.html'">31,000 : 40,000</button>
+                        <button class="range-btn" onclick="location.href='studying_41000_50000.html'">41,000 : 50,000</button>
+                        <button class="range-btn range-4-text" onclick="location.href='studying_more_than_50000.html'">More than 50,000</button>
+                    </div>
+                </div>
+
+                <div class="usecase-item">
+                    <button class="cat-btn" onclick="toggleDropdown(this)">
+                        <span id="cat-5">Graphic Design</span> <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="price-dropdown">
+                        <button class="range-btn" onclick="location.href='graphic_design_20000_30000.html'">20,000 : 30,000</button>
+                        <button class="range-btn" onclick="location.href='graphic_design_31000_40000.html'">31,000 : 40,000</button>
+                        <button class="range-btn" onclick="location.href='graphic_design_41000_50000.html'">41,000 : 50,000</button>
+                        <button class="range-btn range-4-text" onclick="location.href='graphic_design_more_than_50000.html'">More than 50,000</button>
+                    </div>
+                </div>
+
+                <div class="usecase-item">
+                    <button class="cat-btn" onclick="toggleDropdown(this)">
+                        <span id="cat-6">Video Editing</span> <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="price-dropdown">
+                        <button class="range-btn" onclick="location.href='video_editing_20000_30000.html'">20,000 : 30,000</button>
+                        <button class="range-btn" onclick="location.href='video_editing_31000_40000.html'">31,000 : 40,000</button>
+                        <button class="range-btn" onclick="location.href='video_editing_41000_50000.html'">41,000 : 50,000</button>
+                        <button class="range-btn range-4-text" onclick="location.href='video_editing_more_than_50000.html'">More than 50,000</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        };
+
+        function toggleDropdown(btnElement) {
+            const currentDropdown = btnElement.nextElementSibling;
+            const allDropdowns = document.querySelectorAll('.price-dropdown');
+            const allBtns = document.querySelectorAll('.cat-btn');
+
+            allDropdowns.forEach(dd => {
+                if(dd !== currentDropdown) dd.classList.remove('show');
+            });
+            allBtns.forEach(b => {
+                if(b !== btnElement) b.classList.remove('active');
+            });
+
+            currentDropdown.classList.toggle('show');
+            btnElement.classList.toggle('active');
+        }
+
+        document.onclick = (e) => {
+            if (!menu.contains(e.target) && e.target !== btn) {
+                menu.classList.remove('active');
+            }
+            if (!e.target.closest('.usecase-item')) {
+                document.querySelectorAll('.price-dropdown').forEach(dd => dd.classList.remove('show'));
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            }
+        };
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = '#f0f4f8';
+                document.documentElement.style.setProperty('--text-main-white', '#1e2030');
+                document.querySelector('.navbar').style.backgroundColor = '#dde3f0';
+                document.querySelector('.dropdown-list').style.background = '#ffffff';
+                document.querySelectorAll('.cat-btn').forEach(b => {
+                    b.style.background = '#fff';
+                    b.style.color = '#1e2030';
+                });
+            } else {
+                document.body.style.background = 'radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%)';
+                document.documentElement.style.setProperty('--text-main-white', '#FFFFFF');
+                document.querySelector('.navbar').style.backgroundColor = 'var(--glass-bg)';
+                document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+                document.querySelectorAll('.cat-btn').forEach(b => {
+                    b.style.background = '#0f172a';
+                    b.style.color = '#fff';
+                });
+            }
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                    'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                    'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 
+                    'sum-about': 'About Us', 'sum-contact': 'Contact Us', 
+                    'txt-about': 'Labora is a premium store for high-end laptops.',
+                    'txt-all-title': 'All Laptops', 'txt-all-desc': 'Explore our entire collection of high-end laptops',
+                    'btn-explore': 'Show All &rarr;', 'txt-price-cat': 'Price <span>Categories</span>',
+                    'cat-1': 'General Use', 'cat-2': 'Gaming', 'cat-3': 'Programming',
+                    'cat-4': 'Studying', 'cat-5': 'Graphic Design', 'cat-6': 'Video Editing',
+                    'range-4-text': 'More than 50,000'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'الدخول', 'nav-choices': 'الخيارات',
+                    'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                    'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 
+                    'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا', 
+                    'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب المتطورة.',
+                    'txt-all-title': 'كل الأجهزة', 'txt-all-desc': 'استكشف مجموعتنا الكاملة من الأجهزة المتطورة',
+                    'btn-explore': 'عرض الكل &larr;', 'txt-price-cat': 'فئات <span>الأسعار</span>',
+                    'cat-1': 'إستخدام عام', 'cat-2': 'ألعاب', 'cat-3': 'برمجة',
+                    'cat-4': 'دراسة', 'cat-5': 'تصميم جرافيك', 'cat-6': 'مونتاج فيديو',
+                    'range-4-text': 'أكثر من 50,000'
+                }
+            };
+
+            for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === 'txt-price-cat' || id === 'main-logo') {
+                        el.innerHTML = data[lang][id];
+                    } else {
+                        el.innerText = data[lang][id];
+                    }
+                }
+            }
+            document.querySelectorAll('.range-4-text').forEach(el => el.innerText = data[lang]['range-4-text']);
+            document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+            menu.style.right = (lang === 'ar') ? 'auto' : '0';
+            menu.style.left = (lang === 'ar') ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>

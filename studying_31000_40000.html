@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labora - Studying Laptops</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <style>
+        /* ================= RESET & VARIABLES ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --accent-cyan-light: #5AD7ED;  
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: white;
+            min-height: 100vh;
+            padding-top: 100px; 
+            transition: background 0.5s ease;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { color: var(--text-dim); text-decoration: none; display: block; padding: 10px; transition: 0.3s; font-size: 0.9em; }
+        .inner-box a:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* ================= CONTENT STYLING ================= */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        .section-header { text-align: center; margin-bottom: 40px; }
+        .range-title { color: var(--cyan); font-size: 2.2em; margin-bottom: 15px; font-weight: 800; }
+        
+        .focus-text { 
+            color: var(--text-dim); 
+            font-size: 1.2em;
+            font-style: italic;
+            border-bottom: 1px solid var(--border);
+            display: inline-block;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        mark { 
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #000; 
+            border-radius: 8px; 
+            padding: 5px 25px; 
+            font-weight: bold;
+            font-size: 1.4em; 
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        /* Sort Style */
+        .sort-container { display: flex; justify-content: center; margin: 20px 0; }
+        #sort {
+            padding: 10px 20px;
+            border-radius: 12px;
+            background: var(--bg-card-navy);
+            color: white;
+            border: 1px solid var(--border);
+            cursor: pointer; outline: none; transition: 0.3s;
+        }
+        #sort:hover { border-color: var(--cyan); }
+
+        /* ================= PRODUCT GRID ================= */
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; padding: 40px 0; }
+        
+        .product-card {
+            background: var(--bg-card-navy); 
+            border: 1px solid var(--border); 
+            border-radius: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex; flex-direction: column;
+            position: relative;
+        }
+        .product-card:hover { 
+            transform: translateY(-10px); 
+            border-color: var(--cyan); 
+            box-shadow: 0 15px 40px rgba(56, 189, 248, 0.15);
+        }
+
+        .image-container { height: 220px; background: rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+        
+        .laptop-details { padding: 25px; flex-grow: 1; }
+        .laptop-details h3 { color: #fff; margin-bottom: 15px; font-size: 22px; font-weight: 700; }
+        
+        .specs-list { list-style: none; padding: 0; font-size: 15px; color: var(--text-dim); margin-bottom: 20px; }
+        .specs-list li { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
+        .price { color: var(--cyan); font-weight: 800; font-size: 18px; }
+
+        .btn-link { 
+            background: var(--cyan); 
+            color: #020617; 
+            text-decoration: none; 
+            padding: 10px 25px; 
+            border-radius: 10px; 
+            font-weight: 800; 
+            transition: 0.3s; 
+        }
+        .btn-link:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--cyan); }
+
+        /* ================= FOOTER BUTTON ================= */
+        .footer-actions { display: flex; justify-content: center; padding: 60px 0; }
+        .btn-next {background: linear-gradient(90deg, var(--cyan), var(--purple)); 
+            color: #fff; 
+            padding: 15px 80px; 
+            border-radius: 15px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            text-decoration: none; 
+            transition: var(--transition); 
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+        .btn-next:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(129, 140, 248, 0.4); }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo">Lap<span>ora</span></div>
+        </div>
+
+        <ul class="nav-links">
+           <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+        </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:01022948009" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="section-header">
+            <h1 class="range-title" id="txt-range">Student Selection 🎓</h1>
+            
+            <p class="focus-text" id="txt-focus">Portability, Long battery life, and efficient multitasking for studies.</p><br>
+            <mark id="txt-category">31,000 TO 40,000 EGP</mark>
+            
+            <div class="sort-container">
+                <select id="sort" onchange="sortProducts()">
+                    <option value="low" id="opt-low">Price: Low to High</option>
+                    <option value="high" id="opt-high">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="product-grid" id="productList"> 
+            <!-- Product 1 -->
+            <div class="product-card" data-price="39000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.IA1ILIyN3SAHWK2tDvvoxAHaFo?w=221&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="ASUS"></div>
+                <div class="laptop-details">  
+                    <h3 id="p1-name">ASUSVivobook 16 OLED</h3>
+                    <ul class="specs-list">
+                        <li id="p1-cpu">⚙️ Processor: Intel Core i7 13620H </li>
+                        <li id="p1-ram">💾 RAM: 16 GB Unified Memory</li>
+                        <li id="p1-ssd">📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">39,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.htmlss" class="btn-link buy-btn">Buy</a>    
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card" data-price="37000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.Ow_51uP5N_jrx88FnqvVpgHaHa?w=154&h=185&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="Dell"></div>
+                <div class="laptop-details">
+                    <h3 id="p2-name">Dell Latitude 5520</h3>
+                    <ul class="specs-list">
+                        <li id="p2-cpu">⚙️ Processor: Intel Core i5-1135G7 </li>
+                        <li id="p2-ram">💾 RAM: 16GB</li>
+                        <li id="p2-ssd">📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">37,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.html" class="btn-link buy-btn">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card" data-price="34000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.I_JN4jTTtceiuwSt3s3pxAHaE8?w=220&h=185&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="Dell"></div>
+                <div class="laptop-details">
+                    <h3 id="p3-name">Dell Latitude 5410 14"</h3>
+                    <ul class="specs-list">
+                        <li id="p3-cpu">⚙️ Processor: Intel Core i5-10310</li>
+                        <li id="p3-ram">💾 RAM: 16GB</li>
+                        <li id="p3-ssd">📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">34,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.html" class="btn-link buy-btn">Buy</a>
+                    </div>
+                </div>
+            </div>                                        
+
+            <!-- Product 4 -->
+            <div class="product-card" data-price="31000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.vlFa-l4vPvIFmW2xufXCIAHaEK?w=278&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="Dell"></div>
+                <div class="laptop-details">
+                    <h3 id="p4-name">Dell Latitude 5520 (Refurbished)</h3>
+                    <ul class="specs-list">
+                        <li id="p4-cpu">⚙️ Processor: Intel Core i5-1135G7</li>
+                        <li id="p4-ram">💾 RAM: 16GB</li>
+                        <li id="p4-ssd">📁 Storage: 512GB SSD</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price"><span class="price-val">31,000</span> <span class="currency">EGP approx.</span></span>
+                        <a href="personal.html" class="btn-link buy-btn">Buy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <a href="tips.html" class="btn-next" id="btn-next">Next</a>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+
+        btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('active'); };
+        document.onclick = (e) => { if (!menu.contains(e.target) && e.target !== btn) { menu.classList.remove('active'); } };
+
+        function sortProducts() {
+            const grid = document.getElementById('productList');
+            const cards = Array.from(grid.getElementsByClassName('product-card'));
+            const criteria = document.getElementById('sort').value;
+            cards.sort((a, b) => {
+                const priceA = parseInt(a.getAttribute('data-price'));
+                const priceB = parseInt(b.getAttribute('data-price'));
+                return criteria === 'low' ? priceA - priceB : priceB - priceA;
+            });
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = '#f0f4f8';
+                document.querySelectorAll('.product-card').forEach(c => {
+                    c.style.background = '#fff';
+                    c.style.borderColor = '#c5cde0';
+                });
+                document.querySelectorAll('.laptop-details h3').forEach(h => h.style.color = '#1e2030');
+                document.querySelector('.navbar').style.background = 'rgba(221, 227, 240, 0.9)';
+                document.querySelector('.dropdown-list').style.background = '#ffffff';
+            } else {
+                document.body.style.background = 'radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%)';
+                document.querySelectorAll('.product-card').forEach(c => {
+                    c.style.background = 'var(--bg-card-navy)';
+                    c.style.borderColor = 'var(--border)';
+                });
+                document.querySelectorAll('.laptop-details h3').forEach(h => h.style.color = '#fff');
+                document.querySelector('.navbar').style.background = 'var(--glass-bg)';
+                document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+            }
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices', 'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips', 'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 'sum-about': 'About Us', 'sum-contact': 'Contact Us', 'txt-about': 'Labora is a premium store for high-end laptops.', 'link-email': '✉️ Email Us', 'link-call': '📞 Call Us',
+                    'opt-low': 'Price: Low to High', 'opt-high': 'Price: High to Low', 'txt-range': 'Student Selection 🎓', 'txt-category': '31,000 TO 40,000 EGP', 'txt-focus': 'Portability, Long battery life, and efficient multitasking for studies.', 'btn-next': 'Next'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'تسجيل الدخول', 'nav-choices': 'الخيارات', 'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح', 'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا', 'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب عالية الإمكانيات.', 'link-email': '✉️ راسلنا بريدياً', 'link-call': '📞 اتصل بنا',
+                    'opt-low': 'السعر: من الأقل للأعلى', 'opt-high': 'السعر: من الأعلى للأقل', 'txt-range': 'إختيارات الطلاب 🎓', 'txt-category': '31,000 إلى 40,000 ج.م', 'txt-focus': 'سهولة التنقل، عمر بطارية طويل، وتعدد مهام فعال للدراسة.', 'btn-next': 'التالي'
+                }
+            };
+
+            for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = data[lang][id];
+            }
+
+            document.querySelectorAll('.currency').forEach(el => el.innerText = (lang === 'ar' ? 'جنيه مصري تقريباً' : 'EGP approx.'));
+            document.querySelectorAll('.buy-btn').forEach(el => el.innerText = (lang === 'ar' ? 'شراء' : 'Buy'));
+
+            document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+            const menu = document.getElementById('dropdownMenu');
+            if (lang === 'ar') {
+                menu.style.right = 'auto'; menu.style.left = '0';
+            } else {
+                menu.style.left = 'auto'; menu.style.right = '0';
+            }
+        }
+    </script>
+</body>
+</html>

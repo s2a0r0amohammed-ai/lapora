@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lapora | Studio & Study Laptops</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #1e2030;
+            --card-bg: #252840;
+            --primary-cyan: #00d4ff;
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --text-gray: #9399b2;
+            --border-color: #3a3f5c;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Trebuchet MS", sans-serif; }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        body.light-mode {
+            --card-bg: #ffffff; --text-main: #1e2030; --text-gray: #555e7a;
+            --border-color: #c5cde0; --glass-bg: rgba(240,244,248,0.95); --border: rgba(0,0,0,0.1);
+        }
+        body.light-mode { background: #f0f4f8; }
+        .light-mode .dropdown-list { background: #ffffff; }
+        .light-mode summary { color: #1e2030; }
+
+        .navbar {
+            display: flex; align-items: center; justify-content: space-between; padding: 15px 50px;
+            background: var(--glass-bg); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; width: 100%; z-index: 9999;
+        }
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo-text { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo-text span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim); text-decoration: none; font-size: 14px; font-weight: 600;
+            text-transform: capitalize; position: relative; padding: 5px 0; transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple)); transform: scaleX(0); transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff; background: rgba(255,255,255,0.05); width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none; position: absolute; top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98); border: 1px solid var(--border);
+            border-radius: 20px; padding: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { color: var(--text-dim); text-decoration: none; display: block; padding: 10px; transition: 0.3s; font-size: 0.9em; }
+        .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+        .range-section { text-align: center; margin: 40px 0; padding: 0 20px; }
+        .range-title { color: var(--cyan); font-size: 2.2em; margin-bottom: 10px; font-weight: 800; }
+        mark {
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #000; border-radius: 8px; padding: 5px 20px; font-weight: bold; font-size: 1.1em;
+        }
+        .focus-text { color: var(--text-gray); margin-top: 15px; font-size: 1em; font-style: italic; }
+
+        .sort-container { display: flex; justify-content: center; margin-top: 30px; margin-bottom: 30px; }
+        #sort {
+            padding: 10px 20px; border-radius: 12px; background: var(--card-bg);
+            color: white; border: 1px solid var(--border); cursor: pointer; outline: none; transition: 0.3s;
+        }
+        #sort:hover { border-color: var(--cyan); }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; padding: 20px 0; }
+
+        .product-card {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
+            overflow: hidden; transition: var(--transition); box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .product-card:hover { transform: translateY(-10px); border-color: var(--cyan); box-shadow: 0 15px 40px rgba(56, 189, 248, 0.15); }
+
+        .image-container { height: 200px; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .laptop-details { padding: 25px; }
+        .laptop-details h3 { font-size: 20px; margin-bottom: 15px; color: #fff; }
+        .specs-list { list-style: none; padding: 0; font-size: 14px; color: var(--text-dim); margin-bottom: 20px; }
+        .specs-list li { margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
+        .price { color: var(--primary-cyan); font-weight: 800; font-size: 18px; }
+        .btn-link { background: var(--cyan); color: #020617; text-decoration: none; padding: 10px 25px; border-radius: 10px; font-weight: 800; transition: 0.3s; }
+        .btn-link:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+
+        .footer-actions { display: flex; justify-content: center; padding: 50px 0; }
+        .btn-next {
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #fff; padding: 15px 80px; border-radius: 15px; font-weight: 800;
+            text-decoration: none; transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-next:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(129, 140, 248, 0.4); filter: brightness(1.1); }
+
+        @media (max-width: 768px) { .product-grid { grid-template-columns: 1fr; } .navbar { padding: 15px 25px; } .nav-links { display: none; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo-text">Lap<span>ora</span></div>
+        </div>
+        <ul class="nav-links">
+         <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+        </ul>
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box"><p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p></div>
+                </details>
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:+201014435761" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <div class="range-section">
+        <div class="range-title" id="txt-range">Video Editing 🎬</div>
+        <p><mark id="txt-category">41,000 – 50,000 EGP</mark></p>
+        <p class="focus-text" id="txt-focus">Powerful multi-core processors, dedicated GPUs, and fast NVMe storage — engineered for seamless 4K editing and smooth rendering workflows.</p>
+
+        <div class="sort-container">
+            <select id="sort" onchange="sortProducts()">
+                <option value="low">Price: Low to High</option>
+                <option value="high">Price: High to Low</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product-grid" id="productList">
+
+            <div class="product-card" data-price="41500">
+                <div class="image-container"><img src="https://m.media-amazon.com/images/I/71c5W9NxN5L._AC_SL1500_.jpg" alt="Study"></div>
+                <div class="laptop-details">
+                    <h3>Lenovo IdeaPad 1</h3>
+                    <ul class="specs-list">
+                        <li>📚 Perfect for Daily Study</li>
+                        <li>⚙️ Celeron N4500 / 4GB RAM</li>
+                        <li>📁 256GB SSD High Speed</li>
+                        <li>🔋 Ultra Portable & Light</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">41,500 EGP</span>
+                        <a href="#" class="btn-link">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-price="28000">
+                <div class="image-container"><img src="https://m.media-amazon.com/images/I/71f5Eu5lJSL._AC_SL1500_.jpg" alt="Acer"></div>
+                <div class="laptop-details">
+                    <h3>Acer Aspire 5 Pro</h3>
+                    <ul class="specs-list">
+                        <li>✂️ Smooth 1080p Editing</li>
+                        <li>⚙️ Core i5-12th Gen / 16GB</li>
+                        <li>🎮 NVIDIA MX550 2GB GPU</li>
+                        <li>🖥️ IPS Color-Accurate Screen</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">28,000 EGP</span>
+                        <a href="personal.html" class="btn-link">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-price="42500">
+                <div class="image-container"><img src="https://i.ebayimg.com/images/g/4X8AAOSwMNxiawNf/s-l960.webp" alt="MSI"></div>
+                <div class="laptop-details">
+                    <h3>MSI Thin GF63</h3>
+                    <ul class="specs-list">
+                        <li>🎥 Pro Video Rendering</li>
+                        <li>⚙️ Core i7-12th Gen / 16GB</li>
+                        <li>🎮 RTX 3050 4GB Graphics</li>
+                        <li>📁 512GB NVMe Gen4</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">42,500 EGP</span>
+                        <a href="personal.html" class="btn-link">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-price="49900">
+                <div class="image-container"><img src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24164225/226385_HP_Victus_15_MChin_0021.jpg?quality=90&strip=all&crop=0%2C0%2C100%2C100&w=1440" alt="Victus"></div>
+                <div class="laptop-details">
+                    <h3>HP Victus 15 Editing Ed.</h3>
+                    <ul class="specs-list">
+                        <li>🚀 4K Editing & Motion Graphics</li>
+                        <li>⚙️ Ryzen 7-7000 Series</li>
+                        <li>🎮 RTX 4050 6GB (Latest)</li>
+                        <li>❄️ Dual Cooling System</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">49,900 EGP</span>
+                        <a href="personal.html" class="btn-link">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <a href="tips.html" class="btn-next" id="btn-next">NEXT</a>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+        btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('active'); };
+        document.onclick = (e) => { if (!menu.contains(e.target) && e.target !== btn) menu.classList.remove('active'); };
+
+        function setTheme(m) { document.body.classList.toggle("light-mode", m === "light"); }
+
+        function sortProducts() {
+            const grid = document.getElementById('productList');
+            const cards = Array.from(grid.getElementsByClassName('product-card'));
+            const criteria = document.getElementById('sort').value;
+            cards.sort((a, b) => {
+                const priceA = parseInt(a.getAttribute('data-price'));
+                const priceB = parseInt(b.getAttribute('data-price'));
+                return criteria === 'low' ? priceA - priceB : priceB - priceA;
+            });
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                    'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                    'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings',
+                    'sum-about': 'About Us', 'sum-contact': 'Contact Us',
+                    'txt-about': 'Labora is a premium store for high-end laptops.',
+                    'link-email': '✉️ Email Us', 'link-call': '📞 Call Us',
+                    'theme-dark': '🌙 Dark Mode', 'theme-light': '☀️ Light Mode',
+                    'txt-range': 'Video Editing 🎬', 'txt-category': '41,000 – 50,000 EGP',
+                    'txt-focus': 'Powerful multi-core processors, dedicated GPUs, and fast NVMe storage — engineered for seamless 4K editing and smooth rendering workflows.',
+                    'btn-next': 'NEXT'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'تسجيل الدخول', 'nav-choices': 'الخيارات',
+                    'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                    'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات',
+                    'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا',
+                    'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب المتطورة.',
+                    'link-email': '✉️ راسلنا بريدياً', 'link-call': '📞 اتصل بنا هاتفياً',
+                    'theme-dark': '🌙 الوضع الداكن', 'theme-light': '☀️ الوضع الفاتح',
+                    'txt-range': 'مونتاج الفيديو 🎬', 'txt-category': 'من ٤١,٠٠٠ إلى ٥٠,٠٠٠ جنيه',
+                    'txt-focus': 'معالجات متعددة النوى، كروت شاشة مخصصة، وتخزين NVMe سريع — مصممة لمونتاج 4K سلس وتصدير احترافي.',
+                    'btn-next': 'التالي'
+                }
+            };
+            for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = data[lang][id];
+            }
+            document.querySelectorAll('.btn-link').forEach(el => el.innerText = (lang === 'ar' ? 'اشتري' : 'Buy'));
+            document.body.setAttribute("dir", lang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute("lang", lang);
+            menu.style.right = lang === 'ar' ? 'auto' : '0';
+            menu.style.left = lang === 'ar' ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>

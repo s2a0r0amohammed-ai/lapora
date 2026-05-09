@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labora - All Laptops</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <style>
+        /* ================= RESET & VARIABLES ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --accent-cyan-light: #5AD7ED;  
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: white;
+            min-height: 100vh;
+            padding-top: 100px;
+            transition: background 0.5s ease;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }.menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px; 
+            transition: 0.3s; 
+            font-size: 0.9em; 
+            line-height: 1.5;
+        }
+        .inner-box a:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* ================= CONTENT STYLING ================= */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        .range-section { text-align: center; margin: 40px 0; padding: 0 20px; }
+        .range-title { color: var(--cyan); font-size: 2.2em; margin-bottom: 25px; font-weight: 800; }
+
+        mark { 
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            color: #000; 
+            border-radius: 8px; 
+            padding: 5px 20px; 
+            font-weight: bold;
+            font-size: 1.3em; 
+        }
+
+        .focus-text { 
+            color: var(--text-dim); 
+            margin-bottom: 25px; 
+            font-size: 1.1em;
+            font-style: italic;
+            max-width: 800px;
+            margin-left: auto; margin-right: auto;
+        }
+
+        .sort-container { display: flex; justify-content: center; margin: 30px 0; }
+        #sort {
+            padding: 10px 20px;
+            border-radius: 12px;
+            background: var(--bg-card-navy);
+            color: white;
+            border: 1px solid var(--border);
+            cursor: pointer; outline: none; transition: 0.3s;
+        }
+        #sort:hover { border-color: var(--cyan); }
+
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; padding: 20px 0; }
+        
+        .product-card {
+            background: var(--bg-card-navy); 
+            border: 1px solid var(--border); 
+            border-radius: 20px;
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex; flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .product-card:hover { 
+            transform: translateY(-10px); 
+            border-color: var(--cyan); 
+            box-shadow: 0 15px 40px rgba(56, 189, 248, 0.15);
+        }
+
+        .image-container { height: 220px; background: rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .image-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
+        
+        .laptop-details { padding: 25px; flex-grow: 1; }
+        .laptop-details h3 { color: #fff; margin-bottom: 15px; font-size: 22px; font-weight: 700; }
+        
+        .specs-list { list-style: none; padding: 0; font-size: 15px; color: var(--text-dim); margin-bottom: 20px; }
+        .specs-list li { margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+
+        .special-feature { 
+            font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px;
+            padding: 12px; background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--cyan); border-radius: 4px;
+        }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
+        .price { color: var(--cyan); font-weight: 800; font-size: 18px; }
+
+        .btn-link { 
+            background: var(--cyan); 
+            color: #020617; 
+            text-decoration: none; 
+            padding: 10px 25px; 
+            border-radius: 10px; 
+            font-weight: 800; 
+            transition: 0.3s; 
+        }
+        .btn-link:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+
+        .footer-actions { display: flex; justify-content: center; padding: 60px 0; }
+        .btn-next { 
+            background: linear-gradient(90deg, var(--cyan), var(--purple)); 
+            color: #fff; 
+            padding: 15px 80px; 
+            border-radius: 15px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            text-decoration: none; 
+            transition: var(--transition); 
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+        .btn-next:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(129, 140, 248, 0.4); }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo">Lap<span>ora</span></div>
+        </div>
+
+        <ul class="nav-links">
+           <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+        </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:01022948009" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <div class="range-section">
+        <h1 class="range-title" id="page-main-title">General Use Selection 💻</h1>
+        <p class="focus-text" id="page-main-desc">Reliability, balanced performance, and multitasking for everyday work and student life.</p>
+        <p><mark id="page-range-tag">MORE THAN 50,000 EGP</mark></p>
+        
+        <div class="sort-container">
+            <select id="sort" onchange="sortProducts()">
+                <option value="low" id="opt-low">Price: Low to High</option>
+                <option value="high" id="opt-high">Price: High to Low</option>
+            </select></div>
+    </div>
+
+    <div class="container">
+        <div class="product-grid" id="productList"> 
+            
+            <!-- Card 1 -->
+            <div class="product-card" data-price="78000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.voYpDv98f896J9i2gtw1aAHaEK?w=301&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="MacBook Air 15"></div>
+                <div class="laptop-details">  
+                    <h3>MacBook Air 15" (M3)</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Apple M3 (8-Core)</li>
+                        <li>💾 RAM: 16GB RAM</li>
+                        <li>📂 Storage: 512GB SSD</li>
+                    </ul>
+                    <p class="special-feature">Field Features: The Fanless Design means the laptop is 100% silent. Combined with the Liquid Retina display, it's the ultimate premium experience.</p>
+                    <div class="card-footer">
+                        <span class="price">78,000 EGP approx.</span>
+                        <a href="personal.html" class="btn-link">Buy</a>    
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="product-card" data-price="83000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.VyjxGbgqowzR9X2jC-SbwgHaE_?w=238&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="Dell XPS 13 Plus"></div>
+                <div class="laptop-details">
+                    <h3>Dell XPS 13 Plus</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel Core i7-1360P</li>
+                        <li>💾 RAM: 16GB RAM</li>
+                        <li>📂 Storage: 1TB SSD</li>
+                    </ul>
+                    <p class="special-feature">Field Features: Features a Capacitive Touch Row for function keys and an invisible haptic trackpad for a futuristic look.</p>
+                    <div class="card-footer">
+                        <span class="price">83,000 EGP approx.</span>
+                        <a href="personal.html" class="btn-link">Buy</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="product-card" data-price="88000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.g0oRiYZU2AKO6rjU6TesvQHaHa?w=160&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="Huawei MateBook X Pro"></div>
+                <div class="laptop-details">
+                    <h3>Huawei MateBook X Pro</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel Core i7-1360P</li>
+                        <li>💾 RAM: 16GB RAM</li>
+                        <li>📂 Storage: 1TB SSD</li>
+                    </ul>
+                    <p class="special-feature">Field Features: A 3.1K Real Color FullView display with a magnesium-alloy body that weighs only 1.26kg.</p>
+                    <div class="card-footer">
+                        <span class="price">88,000 EGP approx.</span>
+                        <a href="personal.html" class="btn-link">Buy</a>
+                    </div>
+                </div>
+            </div>                                     
+
+            <!-- Card 4 -->
+            <div class="product-card" data-price="73000">
+                <div class="image-container"><img src="https://th.bing.com/th/id/OIP.qy2afstRcYeUtyKU9ckeeAHaFi?w=214&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3" alt="ASUS Zenbook S 13"></div>
+                <div class="laptop-details">
+                    <h3>ASUS Zenbook S 13 OLED</h3>
+                    <ul class="specs-list">
+                        <li>⚙️ CPU: Intel Core i7-1355U</li>
+                        <li>💾 RAM: 16GB RAM</li>
+                        <li>📂 Storage: 1TB SSD</li>
+                    </ul>
+                    <p class="special-feature">Field Features: World's Thinnest OLED Laptop (1cm). Uses eco-friendly Plasma Ceramic Aluminum, finger-print resistant.</p>
+                    <div class="card-footer">
+                        <span class="price">73,000 EGP approx.</span>
+                        <a href="personal.html" class="btn-link">Buy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <a href="tips.html" class="btn-next" id="btn-next">next</a>
+    </div>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+
+        btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('active'); };
+        document.onclick = (e) => { if (!menu.contains(e.target) && e.target !== btn) menu.classList.remove('active'); };
+
+        function sortProducts() {
+            const grid = document.getElementById('productList');
+            const cards = Array.from(grid.getElementsByClassName('product-card'));
+            const criteria = document.getElementById('sort').value;
+            cards.sort((a, b) => {
+                const priceA = parseInt(a.getAttribute('data-price'));
+                const priceB = parseInt(b.getAttribute('data-price'));
+                return criteria === 'low' ? priceA - priceB : priceB - priceA;
+            });
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.background = '#f0f4f8';
+                document.documentElement.style.setProperty('--text-main-white', '#1e2030');
+                document.querySelector('.navbar').style.backgroundColor = '#dde3f0';
+                document.querySelector('.dropdown-list').style.background = '#ffffff';
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.style.background = '#fff';
+                    card.style.borderColor = '#c5cde0';
+                });
+                document.querySelectorAll('.laptop-details h3').forEach(h => h.style.color = '#1e2030');
+            } else {
+                document.body.style.background = 'radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%)';
+                document.documentElement.style.setProperty('--text-main-white', '#FFFFFF');
+                document.querySelector('.navbar').style.backgroundColor = 'var(--glass-bg)';
+                document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.style.background = 'var(--bg-card-navy)';
+                    card.style.borderColor = 'var(--border)';
+                });
+                document.querySelectorAll('.laptop-details h3').forEach(h => h.style.color = '#fff');
+            }
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                    'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                    'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings',
+                    'sum-about': 'About Us', 'sum-contact': 'Contact Us',
+                    'page-main-title': 'General Use Selection 💻',
+                    'page-main-desc': 'Reliability, balanced performance, and multitasking for everyday work and student life.',
+                    'page-range-tag': 'MORE THAN 50,000 EGP',
+                    'opt-low': 'Price: Low to High', 'opt-high': 'Price: High to Low',
+                    'btn-next': 'next'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'تسجيل الدخول', 'nav-choices': 'الخيارات',
+                    'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                    'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات',
+                    'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا',
+                    'page-main-title': 'اختيارات الاستخدام العادي 💻',
+                    'page-main-desc': 'الموثوقية، الأداء المتوازن، وتعدد المهام للعمل اليومي وحياة الطلاب.',
+                    'page-range-tag': 'أكثر من 50,000 جنيه مصري',
+                    'opt-low': 'السعر: من الأقل للأعلى', 'opt-high': 'السعر: من الأعلى للأقل',
+                    'btn-next': 'التالي'
+                }
+            };for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = data[lang][id];
+            }
+            document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+            menu.style.right = (lang === 'ar') ? 'auto' : '0';
+            menu.style.left = (lang === 'ar') ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>

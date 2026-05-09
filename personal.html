@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lapora | Personal Details</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* ================= RESET & VARIABLES ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --accent-cyan-light: #5AD7ED;  
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1A2332 0%, #0f172a 45%, #020617 100%);
+            color: white;
+            padding-top: 100px;
+            min-height: 100vh;
+            transition: background 0.5s ease;
+        }
+
+        /* ================= NAVBAR (Same as Price Page) ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px; 
+            transition: 0.3s; 
+            font-size: 0.9em; 
+            line-height: 1.5;
+        }
+        .inner-box a:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* ================= FORM CONTENT ================= */
+        .wrapper { display: flex; justify-content: center; padding: 40px 20px; }
+        
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: #0f172a; /* Same as price-card background */
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+        }
+
+        .container h1 { text-align: center; font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; color: var(--text-main-white); }
+        .sub-text { text-align: center; color: var(--text-dim); margin-bottom: 35px; font-size: 1.1rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-box { position: relative; width: 100%; }
+        .full { grid-column: 1 / 3; }
+        .input-box i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--cyan); font-size: 18px; }
+
+        input, select {
+            width: 100%; height: 60px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03); color: var(--text-main-white); padding-left: 55px;
+            font-size: 15px; outline: none; transition: var(--transition);
+        }
+        input:focus, select:focus { border-color: var(--cyan); background: rgba(255,255,255,0.07); }
+
+        .payment-box { margin-top: 30px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .payment-box h3 { color: var(--cyan); margin-bottom: 15px; font-size: 1.3rem; }
+        .radio-group { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; color: var(--text-main-white); font-size: 1rem; cursor: pointer; }
+        .radio-group input { width: 18px; height: 18px; accent-color: var(--cyan); }
+
+        .discount { display: flex; gap: 12px; margin-top: 25px; }
+        .apply-btn { width: 150px; border-radius: 12px; border: 2px solid var(--cyan); background: transparent; color: var(--cyan); font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .apply-btn:hover { background: var(--cyan); color: #000; }
+
+        .submit-btn {
+            width: 100%; height: 65px; margin-top: 30px; border: none; border-radius: 15px;
+            background: linear-gradient(135deg, #3b82f6, #38bdf8); /* Gradient from Price page buttons */
+            color: #fff; font-size: 1.5rem; font-weight: 800; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
+        }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 25px -5px rgba(56, 189, 248, 0.6); filter: brightness(1.1); }
+
+        /* --- Light Mode Adaptation --- */
+        body.light-mode { background: #f0f4f8 !important; }
+        .light-mode .navbar { background: #dde3f0; }
+        .light-mode .container { background: #ffffff; border-color: rgba(0,0,0,0.05); }
+        .light-mode .container h1 { color: #1e2030; }
+        .light-mode .sub-text { color: #555e7a; }
+        .light-mode input, .light-mode select { background: #f1f5f9; color: #1e2030; border-color: #cbd5e1; }
+        .light-mode .dropdown-list { background: #ffffff; }
+        .light-mode .dropdown-list summary, .light-mode .menu-text-item { color: #1e2030 !important; }
+        .light-mode .payment-box { background: #f8fafc; }
+        .light-mode .radio-group { color: #1e2030; }
+
+        @media(max-width: 850px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .form-grid { grid-template-columns: 1fr; }
+            .full { grid-column: auto; }
+            .container h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo-container">
+        <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+        <div class="logo">Lap<span>ora</span></div>
+    </div>
+
+    <ul class="nav-links">
+       <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+
+    </ul>
+
+    <div class="menu-wrapper">
+        <div class="menu-dots-btn" id="menuBtn">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </div>
+        
+        <div class="dropdown-list" id="dropdownMenu">
+            <div class="menu-title" id="txt-title">MENU</div>
+            <details>
+                <summary id="sum-settings">Settings</summary>
+                <div class="inner-box">
+                    <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                    <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                    <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                    <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                </div>
+            </details>
+            <details>
+                <summary id="sum-about">About Us</summary>
+                <div class="inner-box">
+                    <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                </div>
+            </details>
+            <details>
+                <summary id="sum-contact">Contact Us</summary>
+                <div class="inner-box">
+                    <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                    <a href="tel:+201014435761" id="link-call">📞 Call Us</a>
+                </div>
+            </details>
+        </div>
+    </div>
+</nav>
+
+<div class="wrapper">
+    <div class="container">
+        <h1 id="txtTitle">Personal Details</h1>
+        <p class="sub-text" id="txtsub"><i>Set your information to confirm the order</i></p>
+
+        <form action="project 2.html">
+            <div class="form-grid">
+                <div class="input-box">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="input-fname" placeholder="First Name" required>
+                </div>
+                <div class="input-box">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="input-sname" placeholder="Second Name" required>
+                </div>
+                <div class="input-box full">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="tel" id="input-phone" placeholder="Phone Number" required>
+                </div>
+                <div class="input-box full">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="tel" id="input-phone2" placeholder="Another Phone Number (optional)">
+                </div><div class="input-box full">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="input-email" placeholder="Email (info@gmail.com)" required>
+                </div>
+                <div class="input-box full">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <select id="Gov" required>
+                        <option disabled selected>Choose your Government</option>
+                        <option>Cairo</option>
+                        <option>Giza</option>
+                        <option>Alexandria</option>
+                        <option>Red Sea</option>
+                        <option>Beheira</option>
+                        <option>Fayoum</option>
+                        <option>Gharbia</option>
+                        <option>Ismailia</option>
+                        <option>Qalyubia</option>
+                        <option>New Valley</option>
+                        <option>Suez</option>
+                        <option>Aswan</option>
+                        <option>Assiut</option>
+                        <option>Beni Suef</option>
+                        <option>Port Said</option>
+                        <option>Damietta</option>
+                        <option>South Sinai</option>
+                        <option>Kafr El Sheikh</option>
+                        <option>Matrouh</option>
+                        <option>Luxor</option>
+                        <option>Qena</option>
+                        <option>North Sinai</option>
+                        <option>Sohag</option>
+                    </select>
+                </div>
+                <div class="input-box full">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <input type="text" id="input-city" placeholder="City" required>
+                </div>
+                <div class="input-box full">
+                    <i class="fa-solid fa-road"></i>
+                    <input type="text" id="input-street" placeholder="Street Name, Land Mark" required>
+                </div>
+                <div class="input-box full">
+                    <i class="fa-solid fa-building"></i>
+                    <input type="text" id="input-build" placeholder="Building & Department Number" required>
+                </div>
+            </div>
+
+            <div class="payment-box">
+                <h3 id="paymentTitle">Choose payment method</h3>
+                <label class="radio-group"><input type="radio" name="payment"><span id="pay-cash"> Cash On Delivery</span></label>
+                <label class="radio-group"><input type="radio" name="payment"><span id="pay-card"> Credit Card</span></label>
+                <label class="radio-group"><input type="radio" name="payment"><span id="pay-insta"> Instapay</span></label>
+            </div>
+
+            <div class="discount">
+                <input type="text" id="input-disc" placeholder="Discount Code">
+                <button type="button" class="apply-btn" id="apply-btn">Apply</button>
+            </div>
+
+            <button type="submit" id="confirmBtn" class="submit-btn" >  <a href="thanks.html" id="confirmBtn" class="submit-btn" style="text-decoration: none; display: inline-block; text-align: center;">Confirm Order</a></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('dropdownMenu');
+
+    btn.onclick = (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('active');
+    };
+
+    document.onclick = (e) => {
+        if (!menu.contains(e.target) && e.target !== btn) {
+            menu.classList.remove('active');
+        }
+    };
+
+    function setTheme(mode) {
+        if (mode === 'light') document.body.classList.add('light-mode');
+        else document.body.classList.remove('light-mode');
+    }
+
+    function changeLang(lang) {
+        const isAr = (lang === 'ar');
+        document.body.style.direction = isAr ? "rtl" : "ltr";
+        
+        const data = {
+            'en': {
+                'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 
+                'sum-about': 'About Us', 'sum-contact': 'Contact Us', 'txtTitle': 'Personal Details',
+                'txtsub': 'Set your information to confirm the order', 'paymentTitle': 'Choose payment method',
+                'confirmBtn': 'Confirm Order', 'txt-about': 'Labora is a premium store for high-end laptops.',
+                'link-email': '✉️ Email Us', 'link-call': '📞 Call Us',
+                'pay-cash': ' Cash On Delivery', 'pay-card': ' Credit Card', 'pay-insta': ' Instapay',
+                'apply-btn': 'Apply'
+            },
+            'ar': {
+                'nav-home': 'الرئيسية', 'nav-signin': 'تسجيل الدخول', 'nav-choices': 'الخيارات',
+                'nav-recom': 'التوصيات', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 
+                'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا', 'txtTitle': 'البيانات الشخصية',
+                'txtsub': 'أدخل معلوماتك لتأكيد الطلب', 'paymentTitle': 'اختر طريقة الدفع',
+                'confirmBtn': 'تأكيد الطلب', 'txt-about': 'لابورا هو متجر متميز لأجهزة الكمبيوتر المحمولة الراقية.',
+                'link-email': '✉️ راسلنا بريدياً', 'link-call': '📞 اتصل بنا',
+                'pay-cash': ' الدفع عند الاستلام', 'pay-card': ' بطاقة ائتمان', 'pay-insta': ' إنستا باي',
+                'apply-btn': 'تطبيق'
+            }
+        };
+
+        for (let id in data[lang]) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = data[lang][id];
+        }
+
+        const placeholders = {
+            'input-fname': isAr ? 'الاسم الأول' : 'First Name',
+            'input-sname': isAr ? 'الاسم الثاني' : 'Second Name',
+            'input-phone': isAr ? 'رقم الهاتف' : 'Phone Number',
+            'input-phone2': isAr ? 'رقم هاتف آخر (اختياري)' : 'Another Phone Number (optional)',
+            'input-email': isAr ? 'البريد الإلكتروني' : 'Email (info@gmail.com)',
+            'input-city': isAr ? 'المدينة' : 'City',
+            'input-street': isAr ? 'اسم الشارع، علامة مميزة' : 'Street Name, Land Mark',
+            'input-build': isAr ? 'رقم المبنى والشقة' : 'Building & Department Number',
+            'input-disc': isAr ? 'كود الخصم' : 'Discount Code'
+        };
+
+        for (let id in placeholders) {
+            const el = document.getElementById(id);
+            if (el) el.placeholder = placeholders[id];
+        }
+
+        const govSelect = document.getElementById('Gov');
+        const govsEN = ["Choose your Government", "Cairo", "Giza", "Alexandria", "Red Sea", "Beheira", "Fayoum", "Gharbia", "Ismailia", "Qalyubia", "New Valley", "Suez", "Aswan", "Assiut", "Beni Suef", "Port Said", "Damietta", "South Sinai", "Kafr El Sheikh", "Matrouh", "Luxor", "Qena", "North Sinai", "Sohag"];
+        const govsAR = ["اختر المحافظة", "القاهرة", "الجيزة", "الإسكندرية", "البحر الأحمر", "البحيرة", "الفيوم", "الغربية", "الإسماعيلية", "القليوبية", "الوادي الجديد", "السويس", "أسوان", "أسيوط", "بني سويف", "بورسعيد", "دمياط", "جنوب سيناء", "كفر الشيخ", "مطروح", "الأقصر", "قنا", "شمال سيناء", "سوهاج"];
+
+        for (let i = 0; i < govSelect.options.length; i++) {
+            if(govsAR[i]) govSelect.options[i].text = isAr ? govsAR[i] : govsEN[i];
+        }
+
+        if (isAr) { menu.style.right = 'auto'; menu.style.left = '0'; }
+        else { menu.style.left = 'auto'; menu.style.right = '0'; }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labora - Your Smart Laptop Compass</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <style>
+        /* ================= RESET & VARIABLES ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+
+        :root {
+            --bg-dark-navy: #1A2332;       
+            --bg-card-navy: #2B3444;       
+            --text-main-white: #FFFFFF;    
+            --text-secondary-gray: #A0A0A0; 
+            --accent-cyan-light: #5AD7ED;  
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            --cyan: #38bdf8;
+            --purple: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.1);
+            --deep-blue: #0ea5e9;
+        }
+
+        body {
+            background-color: #05162a; 
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .laptop-icon { color: var(--cyan); font-size: 26px; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4)); }
+        .logo { font-size: 26px; font-weight: 800; color: var(--cyan); }
+        .logo span { color: #fff; }
+
+        .nav-links { display: flex; gap: 25px; list-style: none; }
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize; 
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-links a:hover { color: var(--cyan); }
+
+        .menu-wrapper { position: relative; direction: ltr; }
+        .menu-dots-btn {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 10px; transition: var(--transition);
+        }
+        .menu-dots-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 55px; right: 0; width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(20px);
+        }
+        .dropdown-list.active { display: block; animation: slideIn 0.3s ease-out; }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-title { color: var(--cyan); text-align: center; font-weight: 700; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        summary { color: #fff; cursor: pointer; padding: 10px; list-style: none; display: flex; justify-content: space-between; font-weight: 600; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--cyan); transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .inner-box { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 5px; }
+        .inner-box a, .menu-text-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            display: block; 
+            padding: 10px; 
+            transition: 0.3s; 
+            font-size: 0.9em; 
+            line-height: 1.5;
+        }
+        .inner-box a:hover, .menu-text-item:hover { color: var(--cyan); transform: translateX(5px); }
+
+        /* ================= HERO SECTION ================= */
+        .hero {
+            display: flex;
+            padding: 100px 80px 40px 80px; /* Top padding increased for fixed navbar */
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(to left, rgba(5, 22, 42, 0) 0%, #05162a 70%, #05162a 100%), 
+                        url('img/amany.jpeg'); 
+            background-size: cover;
+            background-position: right 20%; 
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .hero-left { flex: 1; max-width: 40%; }
+        .hero-left h1 { font-size: 44px; line-height: 1.1; margin-bottom: 30px; text-transform: uppercase; font-weight: 800; }
+        .feature-item { display: flex; align-items: center; margin-bottom: 20px; }
+        .feature-item i { font-size: 20px; margin-right: 15px; color: var(--cyan); width: 25px; text-align: center; }
+
+        .hero-center { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .central-logo-img {
+            max-width: 850px; width: 100%; height: auto;
+            filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.2));
+            margin-bottom: -10px; 
+        }
+
+        .hero-buttons { display: flex; gap: 15px; align-items: center; }
+        .hero-btn {
+            padding: 10px 24px; border-radius: 50px;
+            text-decoration: none; font-weight: 700;
+            transition: var(--transition); font-size: 13px; text-transform: uppercase;
+        }
+        .btn-signin { border: 2px solid var(--cyan); color: var(--cyan); background: transparent; }
+        .btn-signin:hover { background: var(--cyan); color: #000; }
+        .btn-start { background: linear-gradient(90deg, var(--cyan), var(--deep-blue)); color: #fff; box-shadow: 0 5px 15px rgba(56, 189, 248, 0.2); }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4); }
+
+        .hero-right { flex: 1; }
+
+        /* RTL & Mobile Adjustments */
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .hero { flex-direction: column; text-align: center; padding: 120px 20px 40px; background-position: center; }
+            .hero-left { max-width: 100%; margin-bottom: 30px; }
+            .feature-item { justify-content: center; }
+        }
+
+        body[style*="direction: rtl"] .nav-links { flex-direction: row-reverse; }
+        body[style*="direction: rtl"] .feature-item i { margin-right: 0; margin-left: 15px; }
+        body[style*="direction: rtl"] .hero-buttons { flex-direction: row-reverse; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <span class="laptop-icon"><i class="fa-solid fa-laptop"></i></span>
+            <div class="logo" id="main-logo">Lap<span>ora</span></div>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="index.html" id="nav-home">home</a></li>
+            <li><a href="SIGN IN.html" id="nav-signin">sign in</a></li>
+            <li><a href="choices.html" id="nav-choices">choices</a></li>
+            <li><a href="recommendations.html" id="nav-recom">recommendations</a></li>
+            <li><a href="price.html" id="nav-prices">prices</a></li>
+            <li><a href="tips.html" id="nav-tips">tips</a></li>
+            <li><a href="ourteam.html" id="nav-team">our team</a></li>
+        </ul>
+
+        <div class="menu-wrapper">
+            <div class="menu-dots-btn" id="menuBtn">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+            
+            <div class="dropdown-list" id="dropdownMenu">
+                <div class="menu-title" id="txt-title">MENU</div>
+
+                <details>
+                    <summary id="sum-settings">Settings</summary>
+                    <div class="inner-box">
+                        <a href="javascript:void(0)" onclick="changeLang('ar')" id="lang-ar">🌐 العربية</a>
+                        <a href="javascript:void(0)" onclick="changeLang('en')" id="lang-en">🌐 English</a>
+                        <a href="javascript:void(0)" onclick="setTheme('dark')" id="theme-dark">🌙 Dark Mode</a>
+                        <a href="javascript:void(0)" onclick="setTheme('light')" id="theme-light">☀️ Light Mode</a>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-about">About Us</summary>
+                    <div class="inner-box">
+                        <p id="txt-about" class="menu-text-item">Labora is a premium store for high-end laptops.</p>
+                    </div>
+                </details>
+
+                <details>
+                    <summary id="sum-contact">Contact Us</summary>
+                    <div class="inner-box">
+                        <a href="mailto:Labora@gmail.com" id="link-email">✉️ Email Us</a>
+                        <a href="tel:+201014435761" id="link-call">📞 Call Us</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-left">
+            <h1 id="hero-h1">YOUR SMART<br>LAPTOP COMPASS</h1>
+            <div class="feature-item"><i class="fas fa-search"></i><p id="feat-1">Find your perfect laptop. Smart<br>recommendations, best prices.</p></div>
+            <div class="feature-item"><i class="fas fa-chart-line"></i><p id="feat-2">Comparisons and factors.</p></div>
+            <div class="feature-item"><i class="fas fa-shopping-cart"></i><p id="feat-3">Best prices, and as a seamless<br>shopping experience.</p></div>
+        </div>
+        <div class="hero-center">
+            <img src="img/lapora.png" alt="Labora Logo" class="central-logo-img">
+            <div class="hero-buttons">
+                <a href="SIGN IN.html" class="hero-btn btn-signin" id="btn-signin-hero">Sign In</a>
+                <a href="choices.html" class="hero-btn btn-start" id="btn-start">Start Now</a>
+            </div>
+        </div>
+        <div class="hero-right"></div>
+    </section>
+
+    <script>
+        const btn = document.getElementById('menuBtn');
+        const menu = document.getElementById('dropdownMenu');
+
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        };
+
+        document.onclick = (e) => {
+            if (!menu.contains(e.target) && e.target !== btn) {
+                menu.classList.remove('active');
+            }
+        };
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.style.backgroundColor = '#f0f4f8';
+                document.body.style.color = '#1e2030';
+                document.querySelector('.navbar').style.background = '#dde3f0';
+                document.querySelector('.dropdown-list').style.background = '#ffffff';
+                document.documentElement.style.setProperty('--text-dim', '#555e7a');
+                document.querySelectorAll('.inner-box').forEach(box => box.style.background = '#f1f1f1');
+            } else {
+                document.body.style.backgroundColor = '#05162a';
+                document.body.style.color = 'white';
+                document.querySelector('.navbar').style.background = 'var(--glass-bg)';
+                document.querySelector('.dropdown-list').style.background = 'rgba(15, 23, 42, 0.98)';
+                document.documentElement.style.setProperty('--text-dim', '#94a3b8');
+                document.querySelectorAll('.inner-box').forEach(box => box.style.background = 'rgba(0,0,0,0.2)');
+            }
+        }
+
+        function changeLang(lang) {
+            const data = {
+                'en': {
+                    'nav-home': 'home', 'nav-signin': 'sign in', 'nav-choices': 'choices',
+                    'nav-recom': 'recommendations', 'nav-prices': 'prices', 'nav-tips': 'tips',
+                    'nav-team': 'our team', 'txt-title': 'MENU', 'sum-settings': 'Settings', 
+                    'sum-about': 'About Us', 'sum-contact': 'Contact Us', 
+                    'txt-about': 'Labora is a premium store for high-end laptops.',
+                    'hero-h1': 'YOUR SMART<br>LAPTOP COMPASS', 'btn-signin-hero': 'Sign In', 'btn-start': 'Start Now',
+                    'link-email': '✉️ Email Us', 'link-call': '📞 Call Us',
+                    'feat-1': 'Find your perfect laptop. Smart<br>recommendations, best prices.',
+                    'feat-2': 'Comparisons and factors.',
+                    'feat-3': 'Best prices, and as a seamless<br>shopping experience.'
+                },
+                'ar': {
+                    'nav-home': 'الرئيسية', 'nav-signin': 'الدخول', 'nav-choices': 'خياراتنا',
+                    'nav-recom': 'ترشيحاتنا', 'nav-prices': 'الأسعار', 'nav-tips': 'نصائح',
+                    'nav-team': 'فريقنا', 'txt-title': 'القائمة', 'sum-settings': 'الإعدادات', 
+                    'sum-about': 'من نحن', 'sum-contact': 'اتصل بنا', 
+                    'txt-about': 'لابورا هو متجر متميز لأجهزة اللابتوب المتطورة.',
+                    'hero-h1': 'بوصلتك الذكية<br>لأجهزة اللابتوب', 'btn-signin-hero': 'تسجيل الدخول', 'btn-start': 'ابدأ الآن',
+                    'link-email': '✉️ راسلنا بريدياً', 'link-call': '📞 اتصل بنا هاتفياً',
+                    'feat-1': 'جد جهازك المثالي. ترشيحات ذكية<br>وأفضل الأسعار.',
+                    'feat-2': 'مقارنات ومعايير اختيار دقيقة.',
+                    'feat-3': 'أفضل الأسعار وتجربة تسوق سلسة.'
+                }
+            };
+
+            for (let id in data[lang]) {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = data[lang][id];
+            }
+            
+            document.body.style.direction = (lang === 'ar') ? 'rtl' : 'ltr';
+            menu.style.right = (lang === 'ar') ? 'auto' : '0';
+            menu.style.left = (lang === 'ar') ? '0' : 'auto';
+        }
+    </script>
+</body>
+</html>
